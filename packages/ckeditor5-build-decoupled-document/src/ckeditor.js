@@ -40,6 +40,9 @@ import Table from '@ckeditor/ckeditor5-table/src/table';
 import TableToolbar from '@ckeditor/ckeditor5-table/src/tabletoolbar';
 import TextTransformation from '@ckeditor/ckeditor5-typing/src/texttransformation';
 import CloudServices from '@ckeditor/ckeditor5-cloud-services/src/cloudservices';
+import Mention from '@ckeditor/ckeditor5-mention/src/mention';
+import GeneralHtmlSupport from '@ckeditor/ckeditor5-html-support/src/generalhtmlsupport';
+import SourceEditing from '@ckeditor/ckeditor5-source-editing/src/sourceediting';
 
 export default class DecoupledEditor extends DecoupledEditorBase {}
 
@@ -78,7 +81,10 @@ DecoupledEditor.builtinPlugins = [
 	PasteFromOffice,
 	Table,
 	TableToolbar,
-	TextTransformation
+	TextTransformation,
+	Mention,
+	GeneralHtmlSupport,
+	SourceEditing,
 ];
 
 // Editor configuration.
@@ -112,7 +118,8 @@ DecoupledEditor.defaultConfig = {
 			'mediaEmbed',
 			'|',
 			'undo',
-			'redo'
+			'redo',
+			'sourceEditing',
 		]
 	},
 	image: {
@@ -131,6 +138,15 @@ DecoupledEditor.defaultConfig = {
 			'tableColumn',
 			'tableRow',
 			'mergeTableCells'
+		]
+	},
+	mention: {
+		feeds: [
+			{
+				marker: '@',
+				feed: ['@Test'],
+				minimumCharacters: 1,
+			}
 		]
 	},
 	// This value must be kept in sync with the language defined in webpack.config.js.
