@@ -83,7 +83,7 @@ class HCardEditing extends Plugin {
 			allowWhere: '$text',
 			isInline: true,
 			isObject: true,
-			allowAttributes: ['text', 'src'],
+			allowAttributes: ['text', 'src', 'type'],
 			// allowAttributes: [ 'email', 'name', 'tel' ]
 		});
 	}
@@ -126,45 +126,76 @@ class HCardEditing extends Plugin {
 			// const tel = modelItem.getAttribute( 'tel' );
 			const text = modelItem.getAttribute('text');
 			const src = modelItem.getAttribute('src');
+			const type = modelItem.getAttribute('type');
+			let cardView;
+			if (type === 1) {
+				cardView = viewWriter.createContainerElement('div', {
+					class: 'draggable-card card-header collapse-level-0 d-inline-block',
+				});
 
-			const cardView = viewWriter.createContainerElement('div', {
-				class: 'draggable-card card-header collapse-level-0 d-inline-block',
-			});
+				const linkView = viewWriter.createContainerElement('div', {
+					class: 'w-100 text-truncate pl-1',
+				});
 
-			const linkView = viewWriter.createContainerElement('div', {
-				class: 'w-100 text-truncate pl-1',
-			});
+				const iconView = viewWriter.createContainerElement('img', {
+					src: src,
+				});
 
-			const iconView = viewWriter.createContainerElement('img', {
-				src: src,
-			});
+				const textView = viewWriter.createContainerElement('span', {
+					class: 'card-text',
+				});
 
-			const textView = viewWriter.createContainerElement('span', {
-				class: 'card-text',
-			});
+				viewWriter.insert(
+					viewWriter.createPositionAt(textView, 0),
+					viewWriter.createText(text)
+				);
 
-			viewWriter.insert(
-				viewWriter.createPositionAt(textView, 0),
-				viewWriter.createText(text)
-			);
+				viewWriter.insert(
+					viewWriter.createPositionAt(linkView, 0),
+					iconView
+				);
+				viewWriter.insert(
+					viewWriter.createPositionAt(linkView, 'end'),
+					textView
+				);
 
-			viewWriter.insert(
-				viewWriter.createPositionAt(linkView, 0),
-				iconView
-			);
-			viewWriter.insert(
-				viewWriter.createPositionAt(linkView, 'end'),
-				textView
-			);
+				viewWriter.insert(
+					viewWriter.createPositionAt(cardView, 0),
+					linkView
+				);
+				viewWriter.insert(
+					viewWriter.createPositionAt(cardView, 'end'),
+					linkView
+				);
+			} else {
+				cardView = viewWriter.createContainerElement('div', {
+					class:
+						type === 2
+							? 'draggable-card display-draggable d-inline-block py-0'
+							: 'draggable-card tag-draggable tag-drag-display d-inline-block py-0',
+				});
 
-			viewWriter.insert(
-				viewWriter.createPositionAt(cardView, 0),
-				linkView
-			);
-			viewWriter.insert(
-				viewWriter.createPositionAt(cardView, 'end'),
-				linkView
-			);
+				const iconView = viewWriter.createContainerElement('img', {
+					src: src,
+				});
+
+				const textView = viewWriter.createContainerElement('span', {
+					class: 'card-text',
+				});
+
+				viewWriter.insert(
+					viewWriter.createPositionAt(textView, 0),
+					viewWriter.createText(text)
+				);
+				viewWriter.insert(
+					viewWriter.createPositionAt(cardView, 0),
+					iconView
+				);
+				viewWriter.insert(
+					viewWriter.createPositionAt(cardView, 'end'),
+					textView
+				);
+			}
 
 			return cardView;
 		}
@@ -199,6 +230,12 @@ class HCardEditing extends Plugin {
 			switch (jsonData.type) {
 				case 1:
 					generateGroupElement(writer, fragment, jsonData);
+					break;
+				case 2:
+					genenerateSmallGroupElement(writer, fragment, jsonData);
+					break;
+				case 3:
+					genenerateTagElement(writer, fragment, jsonData);
 					break;
 				default:
 					break;
@@ -250,7 +287,7 @@ function generateGroupElement(writer, fragment, data) {
 						writer.createElement('img', { src: data.src }),
 						writer.createElement(
 							'span',
-							{ class: 'card-text' },
+							{ class: 'card-text type-1' },
 							data.text
 						),
 					]
@@ -261,22 +298,77 @@ function generateGroupElement(writer, fragment, data) {
 	);
 }
 
+function genenerateSmallGroupElement(writer, fragment, data) {
+	writer.appendChild(
+		writer.createElement(
+			'div',
+			{
+				class: 'draggable-card display-draggable d-inline-block py-0',
+			},
+			[
+				writer.createElement('img', { src: data.src }),
+				writer.createElement(
+					'span',
+					{ class: 'card-text type-2 uchi-blue' },
+					data.text
+				),
+			]
+		),
+		fragment
+	);
+}
+
+function genenerateTagElement(writer, fragment, data) {
+	writer.appendChild(
+		writer.createElement(
+			'div',
+			{
+				class: 'draggable-card tag-draggable tag-drag-display d-inline-block py-0',
+			},
+			[
+				writer.createElement('img', { src: data.src }),
+				writer.createElement(
+					'span',
+					{ class: 'card-text type-3' },
+					data.text
+				),
+			]
+		),
+		fragment
+	);
+}
+
 function getCardDataFromViewElement(viewElement) {
-	console.log('viewElement', viewElement);
 	const children = Array.from(viewElement.getChildren());
 	const textChildren = Array.from(children[0].getChildren());
-	const textElement = textChildren.find(
-		(element) =>
-			element.is('element', 'span') && element.hasClass('card-text')
-	);
-	const imgElement = textChildren.find((element) =>
-		element.is('element', 'img')
-	);
-	console.log('imgElement', imgElement);
-	console.log('src', imgElement.getAttribute('src'));
+	let textElement;
+	let imgElement;
+	let type;
+	if (textChildren.length) {
+		textElement = textChildren.find(
+			(element) =>
+				element.is('element', 'span') && element.hasClass('card-text')
+		);
+		imgElement = textChildren.find((element) =>
+			element.is('element', 'img')
+		);
+		type = 1;
+	} else {
+		textElement = children.find(
+			(element) =>
+				element.is('element', 'span') && element.hasClass('card-text')
+		);
+		imgElement = children.find((element) => element.is('element', 'img'));
+		if (textElement.hasClass('type-2')) {
+			type = 2;
+		} else if (textElement.hasClass('type-3')) {
+			type = 3;
+		}
+	}
 	return {
 		text: getText(textElement),
 		src: imgElement.getAttribute('src'),
+		type,
 	};
 }
 
