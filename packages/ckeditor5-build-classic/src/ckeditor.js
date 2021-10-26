@@ -44,6 +44,7 @@ import CloudServices from '@ckeditor/ckeditor5-cloud-services/src/cloudservices'
 import Mention from '@ckeditor/ckeditor5-mention/src/mention';
 import GeneralHtmlSupport from '@ckeditor/ckeditor5-html-support/src/generalhtmlsupport';
 import SourceEditing from '@ckeditor/ckeditor5-source-editing/src/sourceediting';
+import PageBreak from '@ckeditor/ckeditor5-page-break/src/pagebreak';
 
 import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
 import Widget from '@ckeditor/ckeditor5-widget/src/widget';
@@ -57,6 +58,7 @@ import {
 // The draggable-card editor plugin.
 //
 
+// #region HCardEditing
 class HCardEditing extends Plugin {
 	static get requires() {
 		return [Widget];
@@ -86,6 +88,12 @@ class HCardEditing extends Plugin {
 			allowAttributes: ['text', 'src', 'type'],
 			// allowAttributes: [ 'email', 'name', 'tel' ]
 		});
+
+		this.editor.model.schema.addAttributeCheck(context => {
+			if (context.endsWith('draggable-card')) {
+				return true;
+			}
+		});
 	}
 
 	_defineConverters() {
@@ -94,8 +102,9 @@ class HCardEditing extends Plugin {
 		// Data-to-model conversion.
 		conversion.for('upcast').elementToElement({
 			view: {
-				name: 'div',
+				name: 'span',
 				classes: ['draggable-card'],
+				attributes: [/^data-.*$/]
 			},
 			model: (viewElement, { writer }) => {
 				return writer.createElement(
@@ -103,20 +112,70 @@ class HCardEditing extends Plugin {
 					getCardDataFromViewElement(viewElement)
 				);
 			},
+			converterPriority: 'high',
 		});
 
 		// Model-to-data conversion.
 		conversion.for('dataDowncast').elementToElement({
 			model: 'draggable-card',
-			view: (modelItem, { writer: viewWriter }) =>
-				createCardView(modelItem, viewWriter),
+			view: (modelItem, { writer: viewWriter }) => {
+				return createCardView(modelItem, viewWriter);
+			},
 		});
 
 		// Model-to-view conversion.
 		conversion.for('editingDowncast').elementToElement({
 			model: 'draggable-card',
-			view: (modelItem, { writer: viewWriter }) =>
-				toWidget(createCardView(modelItem, viewWriter), viewWriter),
+			view: (modelItem, { writer: viewWriter }) => {
+				return toWidget(
+					createCardView(modelItem, viewWriter),
+					viewWriter
+				);
+			},
+		});
+
+		conversion.for('dataDowncast').add(dispatcher => {
+			dispatcher.on('attribute', (evt, data, conversionApi) => {
+				// Convert <div> attributes only.
+				if (data.item.name != 'draggable-card') {
+					return;
+				}
+
+				const viewWriter = conversionApi.writer;
+				const viewDiv = conversionApi.mapper.toViewElement(data.item);
+
+				// In the model-to-view conversion we convert changes.
+				// An attribute can be added or removed or changed.
+				// The below code handles all 3 cases.
+				if (data.attributeNewValue && data.attributeKey !== "htmlSpan" && data.attributeKey !== "text"
+					&& data.attributeKey !== "src" && data.attributeKey !== "class" && data.attributeKey !== "type") {
+					viewWriter.setAttribute(data.attributeKey, data.attributeNewValue, viewDiv);
+				} else {
+					viewWriter.removeAttribute(data.attributeKey, viewDiv);
+				}
+			});
+		});
+
+		conversion.for('editingDowncast').add(dispatcher => {
+			dispatcher.on('attribute', (evt, data, conversionApi) => {
+				// Convert <draggable-card> attributes only.
+				if (data.item.name != 'draggable-card') {
+					return;
+				}
+
+				const viewWriter = conversionApi.writer;
+				const viewDiv = conversionApi.mapper.toViewElement(data.item);
+
+				// In the model-to-view conversion we convert changes.
+				// An attribute can be added or removed or changed.
+				// The below code handles all 3 cases.
+				if (data.attributeNewValue && data.attributeKey !== "htmlSpan" && data.attributeKey !== "text"
+					&& data.attributeKey !== "src" && data.attributeKey !== "class" && data.attributeKey !== "type") {
+					viewWriter.setAttribute(data.attributeKey, data.attributeNewValue, viewDiv);
+				} else {
+					viewWriter.removeAttribute(data.attributeKey, viewDiv);
+				}
+			});
 		});
 
 		// Helper method for both downcast converters.
@@ -127,13 +186,24 @@ class HCardEditing extends Plugin {
 			const text = modelItem.getAttribute('text');
 			const src = modelItem.getAttribute('src');
 			const type = modelItem.getAttribute('type');
+
+			let dataAttributes = {};
+			for (const item of modelItem.getAttributes()) {
+				if (!item[0].includes("text") && !item[0].includes("src") && !item[0].includes("type") && !item[0].includes("htmlSpan") && !item[0].includes("class")) {
+					dataAttributes[item[0]] = item[1];
+				}
+			}
+
+
+			// console.log(dataAttributes);
 			let cardView;
 			if (type === 1) {
-				cardView = viewWriter.createContainerElement('div', {
-					class: 'draggable-card card-header collapse-level-0 d-inline-block',
+				cardView = viewWriter.createContainerElement('span', {
+					class: 'draggable-card card-header collapse-level-0 d-inline-flex',
+					...dataAttributes
 				});
 
-				const linkView = viewWriter.createContainerElement('div', {
+				const linkView = viewWriter.createContainerElement('span', {
 					class: 'w-100 text-truncate pl-1',
 				});
 
@@ -142,7 +212,7 @@ class HCardEditing extends Plugin {
 				});
 
 				const textView = viewWriter.createContainerElement('span', {
-					class: 'card-text',
+					class: 'card-text type-1',
 				});
 
 				viewWriter.insert(
@@ -168,11 +238,12 @@ class HCardEditing extends Plugin {
 					linkView
 				);
 			} else {
-				cardView = viewWriter.createContainerElement('div', {
+				cardView = viewWriter.createContainerElement('span', {
 					class:
 						type === 2
-							? 'draggable-card display-draggable d-inline-block py-0'
-							: 'draggable-card tag-draggable tag-drag-display d-inline-block py-0',
+							? 'draggable-card display-draggable d-inline-flex'
+							: 'draggable-card tag-draggable tag-drag-display d-inline-flex',
+					...dataAttributes
 				});
 
 				const iconView = viewWriter.createContainerElement('img', {
@@ -180,7 +251,7 @@ class HCardEditing extends Plugin {
 				});
 
 				const textView = viewWriter.createContainerElement('span', {
-					class: 'card-text',
+					class: type === 2 ? 'card-text type-2' : 'card-text type-3',
 				});
 
 				viewWriter.insert(
@@ -215,13 +286,14 @@ class HCardEditing extends Plugin {
 			}
 
 			const textData = data.dataTransfer.getData('textValue');
-
+			const templateData = data.dataTransfer.getData('template');
 			if (!textData) {
 				return;
 			}
 
 			// Use JSON data encoded in the DataTransfer.
 			const jsonData = JSON.parse(textData);
+			const template = JSON.parse(templateData);
 
 			// Translate the draggable-card data to a view fragment.
 			const writer = new UpcastWriter(viewDocument);
@@ -229,13 +301,13 @@ class HCardEditing extends Plugin {
 
 			switch (jsonData.type) {
 				case 1:
-					generateGroupElement(writer, fragment, jsonData);
+					generateGroupElement(writer, fragment, jsonData, template);
 					break;
 				case 2:
-					genenerateSmallGroupElement(writer, fragment, jsonData);
+					genenerateSmallGroupElement(writer, fragment, jsonData, template);
 					break;
 				case 3:
-					genenerateTagElement(writer, fragment, jsonData);
+					genenerateTagElement(writer, fragment, jsonData, template);
 					break;
 				default:
 					break;
@@ -254,35 +326,44 @@ class HCardEditing extends Plugin {
 			const viewElement = data.content.getChild(0);
 
 			if (
-				viewElement.is('element', 'div') &&
+				viewElement.is('element', 'span') &&
 				viewElement.hasClass('draggable-card')
 			) {
+				let data = getCardDataFromViewElement(viewElement);
 				data.dataTransfer.setData(
 					'textValue',
-					JSON.stringify(getCardDataFromViewElement(viewElement))
+					JSON.stringify({ text: data.text, src: data.src, type: data.type })
 				);
+				data.dataTransfer.setData(
+					'template',
+					JSON.stringify(data)
+				)
 			}
 		});
 	}
 }
+// #endregion
 
 //
 // draggable-card helper functions.
 //
-
-function generateGroupElement(writer, fragment, data) {
+// #region helper functions
+function generateGroupElement(writer, fragment, data, templateData) {
 	writer.appendChild(
 		writer.createElement(
-			'div',
+			'span',
 			{
-				class: 'draggable-card card-header collapse-level-0 d-inline-block',
+				class: 'draggable-card card-header collapse-level-0 d-inline-flex',
+				...templateData,
 			},
 			[
 				// writer.createElement( 'a', { href: `mailto:${ contact.email }`, class: 'p-name u-email' }, contact.name ),
 				// writer.createElement( 'span', { class: 'p-tel' }, contact.tel )
 				writer.createElement(
-					'div',
-					{ class: 'w-100 text-truncate pl-1' },
+					'span',
+					{
+						class: 'w-100 text-truncate pl-1',
+					},
 					[
 						writer.createElement('img', { src: data.src }),
 						writer.createElement(
@@ -298,19 +379,26 @@ function generateGroupElement(writer, fragment, data) {
 	);
 }
 
-function genenerateSmallGroupElement(writer, fragment, data) {
+function genenerateSmallGroupElement(writer, fragment, data, templateData) {
 	writer.appendChild(
 		writer.createElement(
-			'div',
+			'span',
 			{
-				class: 'draggable-card display-draggable d-inline-block py-0',
+				class: 'draggable-card display-draggable d-inline-flex',
+				...templateData,
 			},
 			[
-				writer.createElement('img', { src: data.src }),
 				writer.createElement(
 					'span',
-					{ class: 'card-text type-2 uchi-blue' },
-					data.text
+					{ class: 'display-draggable w-100' },
+					[
+						writer.createElement('img', { src: data.src }),
+						writer.createElement(
+							'span',
+							{ class: 'card-text type-2 uchi-blue' },
+							data.text
+						),
+					]
 				),
 			]
 		),
@@ -318,12 +406,13 @@ function genenerateSmallGroupElement(writer, fragment, data) {
 	);
 }
 
-function genenerateTagElement(writer, fragment, data) {
+function genenerateTagElement(writer, fragment, data, templateData) {
 	writer.appendChild(
 		writer.createElement(
-			'div',
+			'span',
 			{
-				class: 'draggable-card tag-draggable tag-drag-display d-inline-block py-0',
+				class: 'draggable-card tag-draggable tag-drag-display d-inline-flex',
+				...templateData,
 			},
 			[
 				writer.createElement('img', { src: data.src }),
@@ -340,11 +429,12 @@ function genenerateTagElement(writer, fragment, data) {
 
 function getCardDataFromViewElement(viewElement) {
 	const children = Array.from(viewElement.getChildren());
-	const textChildren = Array.from(children[0].getChildren());
+	console.log(children.childCount);
+	const textChildren = children.length ? Array.from(children[0].getChildren()) : [];
 	let textElement;
 	let imgElement;
 	let type;
-	if (textChildren.length) {
+	if (textChildren && textChildren.length) {
 		textElement = textChildren.find(
 			(element) =>
 				element.is('element', 'span') && element.hasClass('card-text')
@@ -352,23 +442,36 @@ function getCardDataFromViewElement(viewElement) {
 		imgElement = textChildren.find((element) =>
 			element.is('element', 'img')
 		);
-		type = 1;
+		if (textElement && textElement.hasClass('type-1')) {
+			type = 1;
+		} else if (textElement && textElement.hasClass('type-2')) {
+			type = 2;
+		}
 	} else {
 		textElement = children.find(
 			(element) =>
 				element.is('element', 'span') && element.hasClass('card-text')
 		);
 		imgElement = children.find((element) => element.is('element', 'img'));
-		if (textElement.hasClass('type-2')) {
+		if (textElement && textElement.hasClass('type-2')) {
 			type = 2;
-		} else if (textElement.hasClass('type-3')) {
+		} else if (textElement && textElement.hasClass('type-3')) {
 			type = 3;
 		}
 	}
+
+	let dataAttributes = {};
+	for (const item of viewElement.getAttributes()) {
+		if (!item[0].includes("text") && !item[0].includes("src") && !item[0].includes("type") && !item[0].includes("htmlSpan") && !item[0].includes("class")) {
+			dataAttributes[item[0]] = item[1];
+		}
+	}
+
 	return {
-		text: getText(textElement),
-		src: imgElement.getAttribute('src'),
+		text: textElement ? getText(textElement) : "",
+		src: imgElement ? imgElement.getAttribute('src') : "",
 		type,
+		...dataAttributes
 	};
 }
 
@@ -377,10 +480,283 @@ function getText(viewElement) {
 		.map((node) => (node.is('$text') ? node.data : ''))
 		.join('');
 }
+// #endregion
+
+// #region mention
+function MentionCustomization(editor) {
+	// The upcast converter will convert <a class="mention" href="" data-user-id="">
+	// elements to the model 'mention' attribute.
+	// Data-to-model conversion.
+	editor.conversion.for('upcast').elementToElement({
+		view: {
+			name: 'span',
+			classes: ['draggable-card'],
+		},
+		model: (viewElement, { writer }) => {
+			return writer.createElement(
+				'draggable-card',
+				getCardDataFromViewElement(viewElement)
+			);
+		},
+		converterPriority: 'high',
+	});
+
+	// Model-to-view conversion.
+	editor.conversion.for('editingDowncast').elementToElement({
+		model: 'draggable-card',
+		view: (modelItem, { writer: viewWriter }) => {
+			return toWidget(
+				createCardView(modelItem, viewWriter),
+				viewWriter
+			);
+		},
+	});
+
+	// Helper method for both downcast converters.
+	function createCardView(modelItem, viewWriter) {
+		// const email = modelItem.getAttribute( 'email' );
+		// const name = modelItem.getAttribute( 'name' );
+		// const tel = modelItem.getAttribute( 'tel' );
+		const text = modelItem.getAttribute('text');
+		const src = modelItem.getAttribute('src');
+		const type = modelItem.getAttribute('type');
+		let cardView;
+		if (type === 1) {
+			cardView = viewWriter.createContainerElement('span', {
+				class: 'draggable-card card-header collapse-level-0 d-inline-flex',
+			});
+
+			const linkView = viewWriter.createContainerElement('span', {
+				class: 'w-100 text-truncate pl-1',
+			});
+
+			const iconView = viewWriter.createContainerElement('img', {
+				src: src,
+			});
+
+			const textView = viewWriter.createContainerElement('span', {
+				class: 'card-text type-1',
+			});
+
+			viewWriter.insert(
+				viewWriter.createPositionAt(textView, 0),
+				viewWriter.createText(text)
+			);
+
+			viewWriter.insert(
+				viewWriter.createPositionAt(linkView, 0),
+				iconView
+			);
+			viewWriter.insert(
+				viewWriter.createPositionAt(linkView, 'end'),
+				textView
+			);
+
+			viewWriter.insert(
+				viewWriter.createPositionAt(cardView, 0),
+				linkView
+			);
+			viewWriter.insert(
+				viewWriter.createPositionAt(cardView, 'end'),
+				linkView
+			);
+		} else {
+			cardView = viewWriter.createContainerElement('span', {
+				class:
+					type === 2
+						? 'draggable-card display-draggable d-inline-flex'
+						: 'draggable-card tag-draggable tag-drag-display d-inline-flex',
+			});
+
+			const iconView = viewWriter.createContainerElement('img', {
+				src: src,
+			});
+
+			const textView = viewWriter.createContainerElement('span', {
+				class: type === 2 ? 'card-text type-2' : 'card-text type-3',
+			});
+
+			viewWriter.insert(
+				viewWriter.createPositionAt(textView, 0),
+				viewWriter.createText(text)
+			);
+			viewWriter.insert(
+				viewWriter.createPositionAt(cardView, 0),
+				iconView
+			);
+			viewWriter.insert(
+				viewWriter.createPositionAt(cardView, 'end'),
+				textView
+			);
+		}
+
+		return cardView;
+	}
+}
+// #endregion
+
+
+function ConvertDivAttributes(editor) {
+	// Allow <div> elements in the model.
+	editor.model.schema.register('div', {
+		allowWhere: '$block',
+		allowContentOf: '$root'
+	});
+
+	// Allow <div> elements in the model to have all attributes.
+	editor.model.schema.addAttributeCheck(context => {
+		if (context.endsWith('div')) {
+			return true;
+		}
+	});
+
+	// The view-to-model converter converting a view <div> with all its attributes to the model.
+	editor.conversion.for('upcast').elementToElement({
+		view: 'div',
+		model: (viewElement, { writer: modelWriter }) => {
+			return modelWriter.createElement('div', viewElement.getAttributes());
+		}
+	});
+
+	// The model-to-view converter for the <div> element (attributes are converted separately).
+	editor.conversion.for('downcast').elementToElement({
+		model: 'div',
+		view: 'div'
+	});
+
+	// The model-to-view converter for <div> attributes.
+	// Note that a lower-level, event-based API is used here.
+	editor.conversion.for('downcast').add(dispatcher => {
+		dispatcher.on('attribute', (evt, data, conversionApi) => {
+			// Convert <div> attributes only.
+			if (data.item.name != 'div') {
+				return;
+			}
+
+			const viewWriter = conversionApi.writer;
+			const viewDiv = conversionApi.mapper.toViewElement(data.item);
+
+			// In the model-to-view conversion we convert changes.
+			// An attribute can be added or removed or changed.
+			// The below code handles all 3 cases.
+			if ((!data.attributeNewValue && data.attributeKey.includes("ng-switch")) || (data.attributeNewValue && !data.attributeKey.includes("html"))) {
+				viewWriter.setAttribute(data.attributeKey, data.attributeNewValue, viewDiv);
+			} else {
+				viewWriter.removeAttribute(data.attributeKey, viewDiv);
+			}
+		});
+	});
+}
+
+function ConvertSpanAttributes(editor) {
+	// Allow <span> elements in the model.
+	editor.model.schema.register('span', {
+		allowWhere: '$block',
+		allowContentOf: '$root'
+	});
+
+	// Allow <span> elements in the model to have all attributes.
+	editor.model.schema.addAttributeCheck(context => {
+		if (context.endsWith('span')) {
+			return true;
+		}
+	});
+
+	// The view-to-model converter converting a view <span> with all its attributes to the model.
+	editor.conversion.for('upcast').elementToElement({
+		view: 'span',
+		model: (viewElement, { writer: modelWriter }) => {
+			return modelWriter.createElement('span', viewElement.getAttributes());
+		}
+	});
+
+	// The model-to-view converter for the <span> element (attributes are converted separately).
+	editor.conversion.for('downcast').elementToElement({
+		model: 'span',
+		view: 'span'
+	});
+
+	// The model-to-view converter for <span> attributes.
+	// Note that a lower-level, event-based API is used here.
+	editor.conversion.for('downcast').add(dispatcher => {
+		dispatcher.on('attribute', (evt, data, conversionApi) => {
+			// Convert <span> attributes only.
+			if (data.item.name != 'span') {
+				return;
+			}
+
+			const viewWriter = conversionApi.writer;
+			const viewspan = conversionApi.mapper.toViewElement(data.item);
+
+			// In the model-to-view conversion we convert changes.
+			// An attribute can be added or removed or changed.
+			// The below code handles all 3 cases.
+			if ((!data.attributeNewValue && data.attributeKey.includes("ng-switch")) ||
+				(data.attributeNewValue && !data.attributeKey.includes("html") && !data.attributeKey.includes("editspan"))) {
+				viewWriter.setAttribute(data.attributeKey, data.attributeNewValue, viewspan);
+			} else {
+				viewWriter.removeAttribute(data.attributeKey, viewspan);
+			}
+		});
+	});
+}
+
+function ConvertStrongAttributes(editor) {
+	// Allow <strong> elements in the model.
+	editor.model.schema.register('strong', {
+		allowWhere: '$block',
+		allowContentOf: '$root'
+	});
+
+	// Allow <strong> elements in the model to have all attributes.
+	editor.model.schema.addAttributeCheck(context => {
+		if (context.endsWith('strong')) {
+			return true;
+		}
+	});
+
+	// The view-to-model converter converting a view <strong> with all its attributes to the model.
+	editor.conversion.for('upcast').elementToElement({
+		view: 'strong',
+		model: (viewElement, { writer: modelWriter }) => {
+			return modelWriter.createElement('strong', viewElement.getAttributes());
+		}
+	});
+
+	// The model-to-view converter for the <strong> element (attributes are converted separately).
+	editor.conversion.for('downcast').elementToElement({
+		model: 'strong',
+		view: 'strong'
+	});
+
+	// The model-to-view converter for <strong> attributes.
+	// Note that a lower-level, event-based API is used here.
+	editor.conversion.for('downcast').add(dispatcher => {
+		dispatcher.on('attribute', (evt, data, conversionApi) => {
+			// Convert <strong> attributes only.
+			if (data.item.name != 'strong') {
+				return;
+			}
+
+			const viewWriter = conversionApi.writer;
+			const viewstrong = conversionApi.mapper.toViewElement(data.item);
+
+			// In the model-to-view conversion we convert changes.
+			// An attribute can be added or removed or changed.
+			// The below code handles all 3 cases.
+			if ((!data.attributeNewValue && data.attributeKey.includes("ng-switch")) ||
+				(data.attributeNewValue && !data.attributeKey.includes("html") && !data.attributeKey.includes("editspan"))) {
+				viewWriter.setAttribute(data.attributeKey, data.attributeNewValue, viewstrong);
+			} else {
+				viewWriter.removeAttribute(data.attributeKey, viewstrong);
+			}
+		});
+	});
+}
 
 // The editor creator to use.
 
-export default class ClassicEditor extends ClassicEditorBase {}
+export default class ClassicEditor extends ClassicEditorBase { }
 
 // Plugins to include in the build.
 ClassicEditor.builtinPlugins = [
@@ -424,6 +800,11 @@ ClassicEditor.builtinPlugins = [
 	GeneralHtmlSupport,
 	SourceEditing,
 	HCardEditing,
+	MentionCustomization,
+	PageBreak,
+	ConvertDivAttributes,
+	// ConvertSpanAttributes,
+	// ConvertStrongAttributes
 ];
 
 // Editor configuration.
@@ -459,32 +840,35 @@ ClassicEditor.defaultConfig = {
 			'|',
 			'undo',
 			'redo',
+			'pageBreak',
 			'sourceEditing',
 		],
 	},
 	htmlSupport: {
-		// allow: [{ name: /.*/, attributes: !0, styles: !0, classes: !0 }],
-		allow: [
-			{
-				name: /^(div|section|article|table|td|figure)$/,
-				attributes: true,
-				classes: true,
-				styles: true,
-			},
-			{
-				name: /^(span|blockquote)$/,
-				styles: true,
-			},
-			{
-				name: 'font',
-				attributes: true,
-			},
-			{
-				name: 'p',
-				classes: true,
-				styles: true,
-			},
-		],
+		allow: [{ name: /.*/, attributes: !0, styles: !0, classes: !0 }],
+		// allow: [
+		// 	{
+		// 		name: /^(span|section|article|table|td|figure)$/,
+		// 		attributes: true,
+		// 		classes: true,
+		// 		styles: true,
+		// 	},
+		// 	{
+		// 		name: /^(span|blockquote)$/,
+		// 		styles: true,
+		// 		classes: true,
+		// 		attributes: true,
+		// 	},
+		// 	{
+		// 		name: 'font',
+		// 		attributes: true,
+		// 	},
+		// 	{
+		// 		name: 'p',
+		// 		classes: true,
+		// 		styles: true,
+		// 	},
+		// ],
 		disallow: [
 			{
 				attributes: [
@@ -542,15 +926,6 @@ ClassicEditor.defaultConfig = {
 				},
 			},
 		},
-	},
-	mention: {
-		feeds: [
-			{
-				marker: '@',
-				feed: ['@Test'],
-				minimumCharacters: 1,
-			},
-		],
 	},
 	// This value must be kept in sync with the language defined in webpack.config.js.
 	language: 'vi',
