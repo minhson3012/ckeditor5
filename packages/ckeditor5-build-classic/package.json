@@ -55,6 +55,7 @@
     "@ckeditor/ckeditor5-dev-utils": "^25.4.0",
     "@ckeditor/ckeditor5-dev-webpack-plugin": "^25.0.0",
     "@ckeditor/ckeditor5-font": "^29.2.0",
+    "@ckeditor/ckeditor5-inspector": "^2.2.2",
     "@ckeditor/ckeditor5-mention": "^29.2.0",
     "@ckeditor/ckeditor5-source-editing": "^29.2.0",
     "@ckeditor/ckeditor5-theme-lark": "^29.2.0",

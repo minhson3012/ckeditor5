@@ -52,6 +52,7 @@ import UpcastWriter from '@ckeditor/ckeditor5-engine/src/view/upcastwriter';
 import {
 	toWidget,
 	viewToModelPositionOutsideModelElement,
+	toWidgetEditable
 } from '@ckeditor/ckeditor5-widget/src/utils';
 
 //
@@ -648,8 +649,61 @@ function ConvertDivAttributes(editor) {
 	});
 }
 
+function ConvertPAttributes(editor) {
+	// Allow <p> elements in the model.
+	editor.model.schema.register('p', {
+		allowWhere: '$block',
+		allowContentOf: '$root'
+	});
+
+	// Allow <p> elements in the model to have all attributes.
+	editor.model.schema.addAttributeCheck(context => {
+		if (context.endsWith('p')) {
+			return true;
+		}
+	});
+
+	// The view-to-model converter converting a view <p> with all its attributes to the model.
+	editor.conversion.for('upcast').elementToElement({
+		view: 'p',
+		model: (viewElement, { writer: modelWriter }) => {
+			return modelWriter.createElement('p', viewElement.getAttributes());
+		}
+	});
+
+	// The model-to-view converter for the <p> element (attributes are converted separately).
+	editor.conversion.for('downcast').elementToElement({
+		model: 'p',
+		view: 'p'
+	});
+
+	// The model-to-view converter for <p> attributes.
+	// Note that a lower-level, event-based API is used here.
+	editor.conversion.for('downcast').add(dispatcher => {
+		dispatcher.on('attribute', (evt, data, conversionApi) => {
+			// Convert <p> attributes only.
+			if (data.item.name != 'p') {
+				return;
+			}
+
+			const viewWriter = conversionApi.writer;
+			const viewp = conversionApi.mapper.toViewElement(data.item);
+
+			// In the model-to-view conversion we convert changes.
+			// An attribute can be added or removed or changed.
+			// The below code handles all 3 cases.
+			if ((!data.attributeNewValue && data.attributeKey.includes("ng-switch")) ||
+				(data.attributeNewValue && !data.attributeKey.includes("html") && !data.attributeKey.includes("editp"))) {
+				viewWriter.setAttribute(data.attributeKey, data.attributeNewValue, viewp);
+			} else {
+				viewWriter.removeAttribute(data.attributeKey, viewp);
+			}
+		});
+	});
+}
+
 function ConvertSpanAttributes(editor) {
-	// Allow <span> elements in the model.
+	// Allow <strong> elements in the model.
 	editor.model.schema.register('span', {
 		allowWhere: '$block',
 		allowContentOf: '$root'
@@ -701,57 +755,114 @@ function ConvertSpanAttributes(editor) {
 	});
 }
 
-function ConvertStrongAttributes(editor) {
-	// Allow <strong> elements in the model.
-	editor.model.schema.register('strong', {
-		allowWhere: '$block',
-		allowContentOf: '$root'
-	});
 
-	// Allow <strong> elements in the model to have all attributes.
-	editor.model.schema.addAttributeCheck(context => {
-		if (context.endsWith('strong')) {
-			return true;
-		}
-	});
+class InputContractEditing extends Plugin {
+	static get requires() {
+		return [Widget];
+	}
 
-	// The view-to-model converter converting a view <strong> with all its attributes to the model.
-	editor.conversion.for('upcast').elementToElement({
-		view: 'strong',
-		model: (viewElement, { writer: modelWriter }) => {
-			return modelWriter.createElement('strong', viewElement.getAttributes());
-		}
-	});
+	init() {
+		// console.log( 'PlaceholderEditing#init() got called' );
 
-	// The model-to-view converter for the <strong> element (attributes are converted separately).
-	editor.conversion.for('downcast').elementToElement({
-		model: 'strong',
-		view: 'strong'
-	});
+		this._defineSchema();
+		this._defineConverters();
 
-	// The model-to-view converter for <strong> attributes.
-	// Note that a lower-level, event-based API is used here.
-	editor.conversion.for('downcast').add(dispatcher => {
-		dispatcher.on('attribute', (evt, data, conversionApi) => {
-			// Convert <strong> attributes only.
-			if (data.item.name != 'strong') {
-				return;
+		// this.editor.commands.add( 'inputcontract', new PlaceholderCommand( this.editor ) );
+
+		this.editor.editing.mapper.on(
+			'viewToModelPosition',
+			viewToModelPositionOutsideModelElement(this.editor.model, viewElement => viewElement.hasClass('inputcontract', 'ng-pristine', 'ng-untouched', 'ng-valid', 'ng-not-empty'))
+		);
+		// this.editor.config.define( 'inputcontractConfig', {
+		//     types: [ 'date', 'first name', 'surname' ]
+		// } );
+
+		this.editor.model.schema.addAttributeCheck(context => {
+			if (context.endsWith("inputcontract")) {
+				return true;
 			}
+		})
+	}
 
-			const viewWriter = conversionApi.writer;
-			const viewstrong = conversionApi.mapper.toViewElement(data.item);
 
-			// In the model-to-view conversion we convert changes.
-			// An attribute can be added or removed or changed.
-			// The below code handles all 3 cases.
-			if ((!data.attributeNewValue && data.attributeKey.includes("ng-switch")) ||
-				(data.attributeNewValue && !data.attributeKey.includes("html") && !data.attributeKey.includes("editspan"))) {
-				viewWriter.setAttribute(data.attributeKey, data.attributeNewValue, viewstrong);
-			} else {
-				viewWriter.removeAttribute(data.attributeKey, viewstrong);
+	_defineSchema() {
+		const schema = this.editor.model.schema;
+
+		schema.register('inputcontract', {
+			// Allow wherever text is allowed:
+			allowWhere: '$text',
+
+			// The inputcontract will act as an inline node:
+			isInline: true,
+
+			// The inline widget is self-contained so it cannot be split by the caret and it can be selected:
+			isObject: true,
+
+			// allowContentOf: '$root',
+
+			// The inline widget can have the same attributes as text (for example linkHref, bold).
+			// allowAttributesOf: '$text',
+
+			// The inputcontract can have many types, like date, name, surname, etc:
+			allowAttributes: ['name', 'editspan', 'ng-model', 'ng-change', 'placholder']
+		});
+	}
+
+	_defineConverters() {
+		const conversion = this.editor.conversion;
+
+		conversion.for('upcast').elementToElement({
+			view: {
+				name: 'span',
+				classes: ['inputcontract']
+			},
+			model: (viewElement, { writer: modelWriter }) => {
+				const name = viewElement.getChild(0).data;
+				let attributes = viewElement.getAttributes();
+				for(let i = 0; i < attributes.length; i++) {
+					console.log("attribute", attributes[i]);
+				}
+				return modelWriter.createElement('inputcontract', { name, ...viewElement.getAttributes() });
 			}
 		});
-	});
+
+		conversion.for('editingDowncast').elementToElement({
+			model: 'inputcontract',
+			view: (modelItem, { writer: viewWriter }) => {
+				// const widgetElement = createPlaceholderView( modelItem, viewWriter );
+				const widgetElement = createPlaceholderView(modelItem, viewWriter);
+				// const widgetElement = viewWriter.createEditableElement('span', modelItem.getAttributes());
+				// Enable widget handling on a inputcontract element inside the editing view.
+				return toWidgetEditable(widgetElement, viewWriter);
+			}
+		});
+
+		conversion.for('dataDowncast').elementToElement({
+			model: 'inputcontract',
+			view: (modelItem, { writer: viewWriter }) => createPlaceholderView(modelItem, viewWriter)
+		});
+
+
+		// Helper method for both downcast converters.
+		function createPlaceholderView(modelItem, viewWriter) {
+			// const name = modelItem.getAttribute( 'name' );
+			// console.log(modelItem);
+			const name = modelItem.getAttribute("name")
+			const inputcontractView = viewWriter.createContainerElement('span', {
+				class: 'inputcontract'
+			}
+			// , {
+			// 	isAllowedInsideAttributeElement: true
+			// }
+			);
+
+			// Insert the inputcontract name (as a text).
+			const innerText = viewWriter.createText(name);
+			viewWriter.insert(viewWriter.createPositionAt(inputcontractView, 0), innerText);
+
+			return inputcontractView;
+		}
+	}
 }
 
 // The editor creator to use.
@@ -803,6 +914,8 @@ ClassicEditor.builtinPlugins = [
 	MentionCustomization,
 	PageBreak,
 	ConvertDivAttributes,
+	// InputContractEditing,
+	// ConvertPAttributes,
 	// ConvertSpanAttributes,
 	// ConvertStrongAttributes
 ];
