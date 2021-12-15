@@ -40,6 +40,7 @@ import TableToolbar from '@ckeditor/ckeditor5-table/src/tabletoolbar';
 import { CS_CONFIG } from '@ckeditor/ckeditor5-cloud-services/tests/_utils/cloud-services-config';
 
 import DocumentListEditing from '../../src/documentlist/documentlistediting';
+import DocumentListUI from '../../src/documentlist/documentlistui';
 
 ClassicEditor
 	.create( document.querySelector( '#editor' ), {
@@ -47,10 +48,12 @@ ClassicEditor
 			Essentials, BlockQuote, Bold, Heading, Image, ImageCaption, ImageStyle, ImageToolbar, Indent, Italic, Link,
 			MediaEmbed, Paragraph, Table, TableToolbar, CodeBlock, TableCaption, EasyImage, ImageResize, LinkImage,
 			AutoImage, HtmlEmbed, HtmlComment, Alignment, IndentBlock, PageBreak, HorizontalLine, ImageUpload,
-			CloudServices, SourceEditing, DocumentListEditing
+			CloudServices, SourceEditing, DocumentListEditing, DocumentListUI
 		],
 		toolbar: [
 			'sourceEditing',
+			'|',
+			'numberedList', 'bulletedList',
 			'|',
 			'heading',
 			'|',

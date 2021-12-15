@@ -12,6 +12,7 @@ import { Enter } from 'ckeditor5/src/enter';
 import { Delete } from 'ckeditor5/src/typing';
 import { CKEditorError } from 'ckeditor5/src/utils';
 
+import DocumentListCommand from './documentlistcommand';
 import {
 	listItemDowncastConverter,
 	listItemParagraphDowncastConverter,
@@ -66,6 +67,10 @@ export default class DocumentListEditing extends Plugin {
 		model.schema.extend( '$container', {
 			allowAttributes: [ 'listType', 'listIndent', 'listItemId' ]
 		} );
+
+		// Register commands for numbered and bulleted list.
+		editor.commands.add( 'numberedList', new DocumentListCommand( editor, 'numbered' ) );
+		editor.commands.add( 'bulletedList', new DocumentListCommand( editor, 'bulleted' ) );
 
 		model.document.registerPostFixer( writer => modelChangePostFixer( model, writer ) );
 
