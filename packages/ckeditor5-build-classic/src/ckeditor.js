@@ -2,6 +2,7 @@
  * @license Copyright (c) 2003-2021, CKSource - Frederico Knabben. All rights reserved.
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
+
 import ClassicEditorBase from '@ckeditor/ckeditor5-editor-classic/src/classiceditor';
 
 import Essentials from '@ckeditor/ckeditor5-essentials/src/essentials';
@@ -53,7 +54,6 @@ import {
 	viewToModelPositionOutsideModelElement,
 	toWidgetEditable
 } from '@ckeditor/ckeditor5-widget/src/utils';
-import LineHeight from 'ckeditor5-line-height-plugin/src/lineheight';
 
 //
 // The draggable-card editor plugin.
@@ -430,7 +430,7 @@ function genenerateTagElement(writer, fragment, data, templateData) {
 
 function getCardDataFromViewElement(viewElement) {
 	const children = Array.from(viewElement.getChildren());
-	// console.log(children.childCount);
+	console.log(children.childCount);
 	const textChildren = children.length ? Array.from(children[0].getChildren()) : [];
 	let textElement;
 	let imgElement;
@@ -462,7 +462,6 @@ function getCardDataFromViewElement(viewElement) {
 	}
 
 	let dataAttributes = {};
-	// console.log(viewElement.getAttributes());
 	for (const item of viewElement.getAttributes()) {
 		if (!item[0].includes("text") && !item[0].includes("src") && !item[0].includes("type") && !item[0].includes("htmlSpan") && !item[0].includes("class")) {
 			dataAttributes[item[0]] = item[1];
@@ -756,69 +755,6 @@ function ConvertSpanAttributes(editor) {
 	});
 }
 
-class CustomFontFamilyUI extends Plugin {
-	init() {
-		this.editor.ui.componentFactory.add('fontFamilyDropdown', () => {
-			const editor = this.editor;
-			const t = editor.t;
-
-			const command = editor.commands.get('fontFamily');
-
-			// Use original fontFamily button - we only changes its behavior.
-			const dropdownView = editor.ui.componentFactory.create('fontFamily');
-
-			// Show label on dropdown's button.
-			dropdownView.buttonView.set('withText', true);
-
-			// To hide the icon uncomment below.
-			// dropdownView.buttonView.set( 'icon', false );
-
-			// Bind dropdown's button label to fontFamily value.
-			dropdownView.buttonView.bind('label').to(command, 'value', value => {
-				// If no value is set on the command show 'Default' text.
-				// Use t() method to make that string translatable.
-				if (value) {
-					let valueArr = value.split(",")
-					value = valueArr[0].replaceAll("'", "");
-				}
-
-				return value ? value : t('Default');
-			});
-
-			return dropdownView;
-		});
-	}
-}
-
-class CustomFontSizeUI extends Plugin {
-	init() {
-		this.editor.ui.componentFactory.add('fontSizeDropdown', () => {
-			const editor = this.editor;
-			const t = editor.t;
-
-			const command = editor.commands.get('fontSize');
-
-			// Use original fontSize button - we only changes its behavior.
-			const dropdownView = editor.ui.componentFactory.create('fontSize');
-
-			// Show label on dropdown's button.
-			dropdownView.buttonView.set('withText', true);
-
-			// To hide the icon uncomment below.
-			// dropdownView.buttonView.set( 'icon', false );
-
-			// Bind dropdown's button label to fontSize value.
-			dropdownView.buttonView.bind('label').to(command, 'value', value => {
-				// If no value is set on the command show 'Default' text.
-				// Use t() method to make that string translatable.
-				return value ? value : t('Default');
-			});
-
-			return dropdownView;
-		});
-	}
-}
-
 
 class InputContractEditing extends Plugin {
 	static get requires() {
@@ -883,7 +819,7 @@ class InputContractEditing extends Plugin {
 			model: (viewElement, { writer: modelWriter }) => {
 				const name = viewElement.getChild(0).data;
 				let attributes = viewElement.getAttributes();
-				for (let i = 0; i < attributes.length; i++) {
+				for(let i = 0; i < attributes.length; i++) {
 					console.log("attribute", attributes[i]);
 				}
 				return modelWriter.createElement('inputcontract', { name, ...viewElement.getAttributes() });
@@ -915,9 +851,9 @@ class InputContractEditing extends Plugin {
 			const inputcontractView = viewWriter.createContainerElement('span', {
 				class: 'inputcontract'
 			}
-				// , {
-				// 	isAllowedInsideAttributeElement: true
-				// }
+			// , {
+			// 	isAllowedInsideAttributeElement: true
+			// }
 			);
 
 			// Insert the inputcontract name (as a text).
@@ -978,9 +914,6 @@ ClassicEditor.builtinPlugins = [
 	MentionCustomization,
 	PageBreak,
 	ConvertDivAttributes,
-	CustomFontFamilyUI,
-	CustomFontSizeUI,
-	LineHeight,
 	// InputContractEditing,
 	// ConvertPAttributes,
 	// ConvertSpanAttributes,
@@ -994,14 +927,10 @@ ClassicEditor.defaultConfig = {
 		items: [
 			'heading',
 			'|',
-			// 'fontfamily',
-			// 'fontsize',
-			'fontFamilyDropdown',
-			'fontSizeDropdown',
+			'fontfamily',
+			'fontsize',
 			'fontColor',
 			'fontBackgroundColor',
-			'|',
-			'lineHeight',
 			'|',
 			'bold',
 			'italic',
@@ -1029,13 +958,7 @@ ClassicEditor.defaultConfig = {
 		],
 	},
 	htmlSupport: {
-		allow: [{ name: /.*/, attributes: !0, styles: !0 },
-		{
-			name: 'span',
-			classes: !0,
-			attributes: !0, 
-			styles: !0
-		}],
+		allow: [{ name: /.*/, attributes: !0, styles: !0, classes: !0 }],
 		// allow: [
 		// 	{
 		// 		name: /^(span|section|article|table|td|figure)$/,
@@ -1116,18 +1039,6 @@ ClassicEditor.defaultConfig = {
 				},
 			},
 		},
-	},
-	fontSize: {
-		options: [
-			9, 10, 11, 12, 13, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72
-		],
-		supportAllValues: true,
-	},
-	fontFamily: {
-		supportAllValues: true,
-	},
-	lineHeight: { // specify your otions in the lineHeight config object. Default values are [ 0, 0.5, 1, 1.5, 2 ]
-		options: [ 0, 0.5, 1, 1.5, 2, 2.5 ]
 	},
 	// This value must be kept in sync with the language defined in webpack.config.js.
 	language: 'vi',
