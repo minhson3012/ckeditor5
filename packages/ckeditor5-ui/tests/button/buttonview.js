@@ -343,7 +343,7 @@ describe( 'ButtonView', () => {
 	} );
 
 	describe( '#keystrokeView', () => {
-		it( 'is omitted in #children when view#withKeystroke is not set', () => {
+		it( 'is omited in #children when view#icon is not defined', () => {
 			view = new ButtonView( locale );
 			view.render();
 
@@ -369,17 +369,7 @@ describe( 'ButtonView', () => {
 			expect( view.keystrokeView.element.textContent ).to.equal( 'Ctrl+A' );
 		} );
 
-		it( 'is omitted in #children when view#keystroke is not defined', () => {
-			// (#9412)
-			view = new ButtonView( locale );
-			view.withKeystroke = true;
-			view.render();
-
-			expect( view.element.childNodes ).to.have.length( 2 );
-			expect( view.keystrokeView.element ).to.be.null;
-		} );
-
-		it( 'usese fancy keystroke preview on Mac', () => {
+		it( 'usese fancy kesytroke preview on Mac', () => {
 			testUtils.sinon.stub( env, 'isMac' ).value( true );
 
 			view = new ButtonView( locale );

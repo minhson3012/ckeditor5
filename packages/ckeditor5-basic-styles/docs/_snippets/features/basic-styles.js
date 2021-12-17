@@ -12,12 +12,8 @@ ClassicEditor
 		toolbar: {
 			items: [
 				'bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript', 'code', '|', 'removeFormat', '|', 'undo', 'redo'
-			]
-		},
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+			],
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		},
 		cloudServices: CS_CONFIG
 	} )

@@ -13,6 +13,7 @@ import BalloonPanelView from '@ckeditor/ckeditor5-ui/src/panel/balloon/balloonpa
 
 import { setData } from '@ckeditor/ckeditor5-engine/src/dev-utils/model';
 import testUtils from '@ckeditor/ckeditor5-core/tests/_utils/utils';
+import { centeredBalloonPositionForLongWidgets } from '@ckeditor/ckeditor5-widget/src/utils';
 import { modelTable } from '../../_utils/utils';
 import { getTableCellsContainingSelection } from '../../../src/utils/selection';
 import { getBalloonCellPositionData, repositionContextualBalloon } from '../../../src/utils/ui/contextualballoon';
@@ -78,8 +79,7 @@ describe( 'table utils', () => {
 							defaultPositions.northArrowSouthEast,
 							defaultPositions.southArrowNorth,
 							defaultPositions.southArrowNorthWest,
-							defaultPositions.southArrowNorthEast,
-							defaultPositions.viewportStickyNorth
+							defaultPositions.southArrowNorthEast
 						]
 					} );
 				} );
@@ -128,7 +128,7 @@ describe( 'table utils', () => {
 							defaultPositions.southArrowNorth,
 							defaultPositions.southArrowNorthWest,
 							defaultPositions.southArrowNorthEast,
-							defaultPositions.viewportStickyNorth
+							centeredBalloonPositionForLongWidgets
 						]
 					} );
 				} );
@@ -186,8 +186,7 @@ describe( 'table utils', () => {
 						defaultPositions.northArrowSouthEast,
 						defaultPositions.southArrowNorth,
 						defaultPositions.southArrowNorthWest,
-						defaultPositions.southArrowNorthEast,
-						defaultPositions.viewportStickyNorth
+						defaultPositions.southArrowNorthEast
 					]
 				} );
 			} );

@@ -236,16 +236,6 @@ export default class ColorTableView extends View {
 	}
 
 	/**
-	 * @inheritDoc
-	 */
-	destroy() {
-		super.destroy();
-
-		this.focusTracker.destroy();
-		this.keystrokes.destroy();
-	}
-
-	/**
 	 * Appends {@link #staticColorsGrid} and {@link #documentColorsGrid} views.
 	 */
 	appendGrids() {

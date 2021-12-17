@@ -31,10 +31,8 @@ ClassicEditor
 	.create( document.querySelector( '#snippet-link-unsafe-classes' ), {
 		cloudServices: CS_CONFIG,
 		extraPlugins: [ AddClassToUnsafeLinks ],
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+		toolbar: {
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		}
 	} )
 	.then( editor => {

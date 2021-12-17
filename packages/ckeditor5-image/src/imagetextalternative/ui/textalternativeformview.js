@@ -152,16 +152,6 @@ export default class TextAlternativeFormView extends View {
 	}
 
 	/**
-	 * @inheritDoc
-	 */
-	destroy() {
-		super.destroy();
-
-		this.focusTracker.destroy();
-		this.keystrokes.destroy();
-	}
-
-	/**
 	 * Creates the button view.
 	 *
 	 * @private

@@ -64,7 +64,6 @@ export default class ImageInlineEditing extends Plugin {
 			isObject: true,
 			isInline: true,
 			allowWhere: '$text',
-			allowAttributesOf: '$text',
 			allowAttributes: [ 'alt', 'src', 'srcset' ]
 		} );
 
@@ -121,10 +120,7 @@ export default class ImageInlineEditing extends Plugin {
 		conversion.for( 'upcast' )
 			.elementToElement( {
 				view: getImgViewElementMatcher( editor, 'imageInline' ),
-				model: ( viewImage, { writer } ) => writer.createElement(
-					'imageInline',
-					viewImage.hasAttribute( 'src' ) ? { src: viewImage.getAttribute( 'src' ) } : null
-				)
+				model: ( viewImage, { writer } ) => writer.createElement( 'imageInline', { src: viewImage.getAttribute( 'src' ) } )
 			} );
 	}
 

@@ -160,13 +160,14 @@ ClassicEditor
 				isGallery: {
 					mode: 'manual',
 					label: 'Gallery link',
-					classes: 'gallery'
+					attributes: {
+						class: 'gallery'
+					}
 				}
 			}
 		},
 		htmlEmbed: {
-			showPreviews: true,
-			sanitizeHtml: html => ( { html, hasChange: false } )
+			showPreviews: true
 		}
 	} )
 	.then( editor => {

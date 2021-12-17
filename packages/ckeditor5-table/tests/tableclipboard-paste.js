@@ -16,6 +16,7 @@ import Paragraph from '@ckeditor/ckeditor5-paragraph/src/paragraph';
 import Input from '@ckeditor/ckeditor5-typing/src/input';
 import testUtils from '@ckeditor/ckeditor5-core/tests/_utils/utils';
 import { getData as getModelData, setData as setModelData } from '@ckeditor/ckeditor5-engine/src/dev-utils/model';
+import { assertEqualMarkup } from '@ckeditor/ckeditor5-utils/tests/_utils/utils';
 import { assertSelectedCells, modelTable, viewTable } from './_utils/utils';
 
 import TableEditing from '../src/tableediting';
@@ -67,7 +68,7 @@ describe( 'table clipboard', () => {
 
 			editor.isReadOnly = false;
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ '00', '01', '02', '03' ],
 				[ '10', '11', '12', '13' ],
 				[ '20', '21', '22', '23' ],
@@ -88,7 +89,7 @@ describe( 'table clipboard', () => {
 
 			editor.isReadOnly = false;
 
-			expect( getModelData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model ), modelTable( [
 				[ '00foo[]', '01', '02', '03' ],
 				[ '10', '11', '12', '13' ],
 				[ '20', '21', '22', '23' ],
@@ -121,7 +122,7 @@ describe( 'table clipboard', () => {
 				[ 'foo', 'foo' ]
 			] );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ tableModelData, '', '02', '03' ],
 				[ '', '', '12', '13' ],
 				[ '20', '21', '22', '23' ],
@@ -145,7 +146,7 @@ describe( 'table clipboard', () => {
 
 			editor.isReadOnly = false;
 
-			expect( getModelData( model ) ).to.equalMarkup( '<paragraph>foo[]</paragraph>' + modelTable( [
+			assertEqualMarkup( getModelData( model ), '<paragraph>foo[]</paragraph>' + modelTable( [
 				[ '00', '01', '02', '03' ],
 				[ '10', '11', '12', '13' ],
 				[ '20', '21', '22', '23' ],
@@ -174,7 +175,7 @@ describe( 'table clipboard', () => {
 
 			editor.isReadOnly = false;
 
-			expect( getModelData( model ) ).to.equalMarkup(
+			assertEqualMarkup( getModelData( model ),
 				'[' + modelTable( [
 					[ 'aa', 'ab', { contents: 'ac', rowspan: 2 } ],
 					[ 'ba', 'bb' ]
@@ -202,7 +203,7 @@ describe( 'table clipboard', () => {
 			data.dataTransfer.setData( 'text/html', '<p>foo</p>' );
 			viewDocument.fire( 'paste', data );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ 'foo', '', '02', '03' ],
 				[ '', '', '12', '13' ],
 				[ '20', '21', '22', '23' ],
@@ -218,7 +219,7 @@ describe( 'table clipboard', () => {
 
 			editor.execute( 'input', { text: 'bar' } );
 
-			expect( getModelData( model ) ).to.equalMarkup( '<paragraph>foobar[]</paragraph>' );
+			assertEqualMarkup( getModelData( model ), '<paragraph>foobar[]</paragraph>' );
 		} );
 
 		it( 'should not alter model.insertContent if mixed content is pasted (table + paragraph)', () => {
@@ -243,7 +244,7 @@ describe( 'table clipboard', () => {
 			data.dataTransfer.setData( 'text/html', `${ tableViewData }<p>foo</p>` );
 			viewDocument.fire( 'paste', data );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ tableModelData + '<paragraph>foo</paragraph>', '', '02', '03' ],
 				[ '', '', '12', '13' ],
 				[ '20', '21', '22', '23' ],
@@ -273,7 +274,7 @@ describe( 'table clipboard', () => {
 			data.dataTransfer.setData( 'text/html', `<p>foo</p>${ tableViewData }` );
 			viewDocument.fire( 'paste', data );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ '<paragraph>foo</paragraph>' + tableModelData, '', '02', '03' ],
 				[ '', '', '12', '13' ],
 				[ '20', '21', '22', '23' ],
@@ -303,7 +304,7 @@ describe( 'table clipboard', () => {
 			data.dataTransfer.setData( 'text/html', `${ tableViewData }${ tableViewData }` );
 			viewDocument.fire( 'paste', data );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ tableModelData + tableModelData, '', '02', '03' ],
 				[ '', '', '12', '13' ],
 				[ '20', '21', '22', '23' ],
@@ -330,7 +331,7 @@ describe( 'table clipboard', () => {
 			data.dataTransfer.setData( 'text/html', `${ table }<p>&nbsp;</p>` );
 			viewDocument.fire( 'paste', data );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ 'aa', 'ab', '02', '03' ],
 				[ 'ba', 'bb', '12', '13' ],
 				[ '20', '21', '22', '23' ],
@@ -357,7 +358,7 @@ describe( 'table clipboard', () => {
 			data.dataTransfer.setData( 'text/html', `${ table }<br>` );
 			viewDocument.fire( 'paste', data );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ 'aa', 'ab', '02', '03' ],
 				[ 'ba', 'bb', '12', '13' ],
 				[ '20', '21', '22', '23' ],
@@ -384,7 +385,7 @@ describe( 'table clipboard', () => {
 			data.dataTransfer.setData( 'text/html', `<p>&nbsp;</p>${ table }` );
 			viewDocument.fire( 'paste', data );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ 'aa', 'ab', '02', '03' ],
 				[ 'ba', 'bb', '12', '13' ],
 				[ '20', '21', '22', '23' ],
@@ -411,7 +412,7 @@ describe( 'table clipboard', () => {
 			data.dataTransfer.setData( 'text/html', `<br>${ table }` );
 			viewDocument.fire( 'paste', data );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ 'aa', 'ab', '02', '03' ],
 				[ 'ba', 'bb', '12', '13' ],
 				[ '20', '21', '22', '23' ],
@@ -438,7 +439,7 @@ describe( 'table clipboard', () => {
 			data.dataTransfer.setData( 'text/html', `<p>&nbsp;</p><p>&nbsp;</p>${ table }<p>&nbsp;</p><br>` );
 			viewDocument.fire( 'paste', data );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ 'aa', 'ab', '02', '03' ],
 				[ 'ba', 'bb', '12', '13' ],
 				[ '20', '21', '22', '23' ],
@@ -459,7 +460,7 @@ describe( 'table clipboard', () => {
 				model.insertContent( element );
 			} );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ 'foo', '', '02', '03' ],
 				[ '', '', '12', '13' ],
 				[ '20', '21', '22', '23' ],
@@ -483,7 +484,7 @@ describe( 'table clipboard', () => {
 				model.insertContent( tableToInsert, editor.model.document.selection );
 			} );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ 'foo', 'foo', '02', '03' ],
 				[ 'foo', 'foo', '12', '13' ],
 				[ '20', '21', '22', '23' ],
@@ -507,7 +508,7 @@ describe( 'table clipboard', () => {
 				[ 'ba', 'bb' ]
 			] );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ { contents: 'aa', foo: 'bar' }, { contents: 'ab', foo: 'bar' }, '02', '03' ],
 				[ { contents: 'ba', foo: 'bar' }, { contents: 'bb', foo: 'bar' }, '12', '13' ],
 				[ '20', '21', '22', '23' ],
@@ -542,7 +543,7 @@ describe( 'table clipboard', () => {
 
 					expect( batches.size ).to.equal( 1 );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02' ],
 						[ '10', 'aa', 'ab' ],
 						[ '20', 'ba', 'bb' ]
@@ -559,7 +560,7 @@ describe( 'table clipboard', () => {
 
 					expect( batches.size ).to.equal( 1 );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '', '', '' ],
 						[ '10', 'aa', 'ab', 'ac', 'ad', 'ae' ],
 						[ '20', 'ba', 'bb', 'bc', 'bd', 'be' ]
@@ -579,7 +580,7 @@ describe( 'table clipboard', () => {
 
 					expect( batches.size ).to.equal( 1 );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02' ],
 						[ '10', 'aa', 'ab' ],
 						[ '20', 'ba', 'bb' ],
@@ -602,7 +603,7 @@ describe( 'table clipboard', () => {
 
 					expect( batches.size ).to.equal( 1 );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '', '', '' ],
 						[ '10', 'aa', 'ab', 'ac', 'ad', 'ae' ],
 						[ '20', 'ba', 'bb', 'bc', 'bd', 'be' ],
@@ -627,7 +628,7 @@ describe( 'table clipboard', () => {
 						[ 'ba', 'bb' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', '02' ],
 						[ 'ba', 'bb', '12' ],
 						[ '20', '21', '22' ]
@@ -643,7 +644,7 @@ describe( 'table clipboard', () => {
 						[ 'ea', 'eb', 'ec', 'ed', 'ee' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', 'ac', 'ad', 'ae' ],
 						[ 'ba', 'bb', 'bc', 'bd', 'be' ],
 						[ 'ca', 'cb', 'cc', 'cd', 'ce' ],
@@ -667,7 +668,7 @@ describe( 'table clipboard', () => {
 						[ 'ba', 'bb' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', 'aa', 'ab' ],
 						[ '10', 'ba', 'bb' ],
 						[ '20', '21', '22' ]
@@ -683,7 +684,7 @@ describe( 'table clipboard', () => {
 						[ 'ea', 'eb', 'ec', 'ed', 'ee' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', 'aa', 'ab', 'ac', 'ad', 'ae' ],
 						[ '10', 'ba', 'bb', 'bc', 'bd', 'be' ],
 						[ '20', 'ca', 'cb', 'cc', 'cd', 'ce' ],
@@ -707,7 +708,7 @@ describe( 'table clipboard', () => {
 						[ 'ba', 'bb' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', 'aa', 'ab' ],
 						[ '10', '11', 'ba', 'bb' ],
 						[ '20', '21', '22', '' ]
@@ -723,7 +724,7 @@ describe( 'table clipboard', () => {
 						[ 'ea', 'eb', 'ec', 'ed', 'ee' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', 'aa', 'ab', 'ac', 'ad', 'ae' ],
 						[ '10', '11', 'ba', 'bb', 'bc', 'bd', 'be' ],
 						[ '20', '21', 'ca', 'cb', 'cc', 'cd', 'ce' ],
@@ -747,7 +748,7 @@ describe( 'table clipboard', () => {
 						[ 'ba', 'bb' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02' ],
 						[ 'aa', 'ab', '12' ],
 						[ 'ba', 'bb', '22' ]
@@ -763,7 +764,7 @@ describe( 'table clipboard', () => {
 						[ 'ea', 'eb', 'ec', 'ed', 'ee' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '', '' ],
 						[ 'aa', 'ab', 'ac', 'ad', 'ae' ],
 						[ 'ba', 'bb', 'bc', 'bd', 'be' ],
@@ -788,7 +789,7 @@ describe( 'table clipboard', () => {
 						[ 'ba', 'bb' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02' ],
 						[ '10', '11', '12' ],
 						[ 'aa', 'ab', '22' ],
@@ -805,7 +806,7 @@ describe( 'table clipboard', () => {
 						[ 'ea', 'eb', 'ec', 'ed', 'ee' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '', '' ],
 						[ '10', '11', '12', '', '' ],
 						[ 'aa', 'ab', 'ac', 'ad', 'ae' ],
@@ -831,7 +832,7 @@ describe( 'table clipboard', () => {
 						[ 'ba', 'bb' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '' ],
 						[ '10', '11', '12', '' ],
 						[ '20', '21', 'aa', 'ab' ],
@@ -848,7 +849,7 @@ describe( 'table clipboard', () => {
 						[ 'ea', 'eb', 'ec', 'ed', 'ee' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '', '', '', '' ],
 						[ '10', '11', '12', '', '', '', '' ],
 						[ '20', '21', 'aa', 'ab', 'ac', 'ad', 'ae' ],
@@ -867,7 +868,7 @@ describe( 'table clipboard', () => {
 						[ 'ba', 'bb' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', '02' ],
 						[ 'ba', 'bb', '12' ],
 						[ '20', '21', '22' ]
@@ -884,7 +885,7 @@ describe( 'table clipboard', () => {
 						[ 'ba', 'bb' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', '02' ],
 						[ 'ba', 'bb', '12' ],
 						[ '20', '21', '22' ]
@@ -906,7 +907,7 @@ describe( 'table clipboard', () => {
 						[ 'ba', 'bb' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '' ],
 						[ '10', '11', '12', '' ],
 						[ '20', '21', 'aa', 'ab' ],
@@ -929,7 +930,7 @@ describe( 'table clipboard', () => {
 						[ 'ba', 'bb' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '' ],
 						[ '10', '11', '12', '' ],
 						[ '20', '21', 'aa', 'ab' ],
@@ -945,7 +946,7 @@ describe( 'table clipboard', () => {
 						[ 'ba', 'bb' ]
 					] );
 
-					expect( getModelData( model ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model ), modelTable( [
 						[ '[]aa', 'ab', '02' ],
 						[ 'ba', 'bb', '12' ],
 						[ '20', '21', '22' ]
@@ -1013,7 +1014,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+----+----+----+----+    +
 					// |    |    |    | ea | eb | ec | ed |    |
 					// +----+----+----+----+----+----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', { contents: '02', colspan: 3 }, '05', '', '' ],
 						[ '10', { contents: '11', colspan: 2, rowspan: 3 }, '13', '14', '15', '', '' ],
 						[ '20', { contents: 'aa', colspan: 2, rowspan: 2 }, { contents: 'ac', rowspan: 2 }, 'ad', 'ae' ],
@@ -1050,7 +1051,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+
 					// | 20 | ba | bb |
 					// +----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02' ],
 						[ '10', 'aa', 'ab' ],
 						[ '20', 'ba', 'bb' ]
@@ -1072,7 +1073,7 @@ describe( 'table clipboard', () => {
 						[ 'ba', 'bb' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', '02', '03' ],
 						[ 'ba', 'bb', '12', '13' ],
 						[ '20', '21', '22', '23' ],
@@ -1098,7 +1099,7 @@ describe( 'table clipboard', () => {
 						[ 'ba', 'bb' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03' ],
 						[ '10', '11', '12', '13' ],
 						[ '20', '21', 'aa', 'ab' ],
@@ -1124,7 +1125,7 @@ describe( 'table clipboard', () => {
 						[ 'ba', 'bb' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03' ],
 						[ '10', 'aa', 'ab', '13' ],
 						[ '20', 'ba', 'bb', '23' ],
@@ -1149,7 +1150,7 @@ describe( 'table clipboard', () => {
 						[ 'aa', 'ab' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03' ],
 						[ '10', 'aa', 'ab', '13' ],
 						[ '20', '21', '22', '23' ],
@@ -1175,7 +1176,7 @@ describe( 'table clipboard', () => {
 						[ 'ba' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03' ],
 						[ '10', 'aa', '12', '13' ],
 						[ '20', 'ba', '22', '23' ],
@@ -1203,7 +1204,7 @@ describe( 'table clipboard', () => {
 						[ 'da', 'db', 'dc', 'dd' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', 'ac', 'ad' ],
 						[ 'ba', 'bb', 'bc', 'bd' ],
 						[ 'ca', 'cb', 'cc', 'cd' ],
@@ -1231,7 +1232,7 @@ describe( 'table clipboard', () => {
 						[ 'ba', 'bb' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03' ],
 						[ '10', { colspan: 2, contents: 'aa' }, '13' ],
 						[ '20', 'ba', 'bb', '23' ],
@@ -1261,7 +1262,7 @@ describe( 'table clipboard', () => {
 						[ { colspan: 2, contents: 'da' }, 'dc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', { colspan: 2, contents: 'ab' }, '03' ],
 						[ { colspan: 3, contents: 'ba' }, '13' ],
 						[ 'ca', 'cb', 'cc', '23' ],
@@ -1289,7 +1290,7 @@ describe( 'table clipboard', () => {
 						[ 'bb' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03' ],
 						[ '10', { rowspan: 2, contents: 'aa' }, 'ab', '13' ],
 						[ '20', 'bb', '23' ],
@@ -1318,7 +1319,7 @@ describe( 'table clipboard', () => {
 						[ 'cc', 'cd' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', { rowspan: 3, contents: 'ab' }, { rowspan: 2, contents: 'ac' }, 'ad' ],
 						[ { rowspan: 2, contents: 'ba' }, 'bd' ],
 						[ 'cc', 'cd' ],
@@ -1376,7 +1377,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+----+----+----+
 					// | 40 | 41 | 42 | 43 | 44 | 45 |
 					// +----+----+----+----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ { contents: 'aa', colspan: 2 }, 'ac', 'ad', { contents: 'ae', rowspan: 2 }, '05' ],
 						[ 'ba', { contents: 'bb', colspan: 3, rowspan: 2 }, '15' ],
 						[ { contents: 'ca', rowspan: 2 }, 'ce', '25' ],
@@ -1416,7 +1417,7 @@ describe( 'table clipboard', () => {
 						[ 'ca', 'cb', 'cc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', 'ac', '03' ],
 						[ 'ba', 'bb', 'bc', '13' ],
 						[ 'ca', 'cb', 'cc', '23' ],
@@ -1452,7 +1453,7 @@ describe( 'table clipboard', () => {
 						[ 'ca', 'cb', 'cc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', 'ac', '03' ],
 						[ 'ba', 'bb', 'bc', '13' ],
 						[ 'ca', 'cb', 'cc', '23' ],
@@ -1504,7 +1505,7 @@ describe( 'table clipboard', () => {
 						[ 'da', 'db', 'dc', 'dd', 'de' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', 'ac', 'ad', 'ae', '05' ],
 						[ 'ba', 'bb', 'bc', 'bd', 'be', '15' ],
 						[ 'ca', 'cb', 'cc', 'cd', 'ce', '25' ],
@@ -1563,7 +1564,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+----+----+
 					// | 40 | 41 | 42 | 43 | 44 |
 					// +----+----+----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03', '04' ],
 						[ '10', { contents: '11', rowspan: 3 }, 'aa', 'ab', '14' ],
 						[ '20', 'ba', 'bb', '24' ],
@@ -1618,7 +1619,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+----+----+----+
 					// | 30 | 31 | 32 | 33 | 34 | 35 |
 					// +----+----+----+----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03', '04', '05' ],
 						[ { contents: '10', colspan: 2 }, '12', 'aa', 'ab', '15' ],
 						[ { contents: '20', colspan: 3 }, 'ba', 'bb', '25' ],
@@ -1664,7 +1665,7 @@ describe( 'table clipboard', () => {
 						[ 'ca', 'cb', 'cc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', 'ac', '03' ],
 						[ 'ba', 'bb', 'bc', '13' ],
 						[ 'ca', 'cb', 'cc', '23' ],
@@ -1708,7 +1709,7 @@ describe( 'table clipboard', () => {
 						[ 'ca', 'cb' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', 'aa', 'ab' ],
 						[ '10', 'ba', 'bb' ],
 						[ '20', 'ca', 'cb' ],
@@ -1752,7 +1753,7 @@ describe( 'table clipboard', () => {
 						[ 'ca', 'cb', 'cc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', 'ac', '03' ],
 						[ 'ba', 'bb', 'bc', '13' ],
 						[ 'ca', 'cb', 'cc', '23' ],
@@ -1792,7 +1793,7 @@ describe( 'table clipboard', () => {
 						[ 'ba', 'bb', 'bc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03' ],
 						[ 'aa', 'ab', 'ac', '13' ],
 						[ 'ba', 'bb', 'bc', '23' ]
@@ -1826,7 +1827,7 @@ describe( 'table clipboard', () => {
 						[ 'ca', 'cb', 'cc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', { colspan: 2, contents: 'ab' }, '03' ],
 						[ { colspan: 3, contents: 'ba' }, '13' ],
 						[ 'ca', 'cb', 'cc', '23' ],
@@ -1862,7 +1863,7 @@ describe( 'table clipboard', () => {
 						[ 'cc', 'cd' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', { rowspan: 3, contents: 'ab' }, { rowspan: 2, contents: 'ac' }, 'ad' ],
 						[ { rowspan: 2, contents: 'ba' }, 'bd' ],
 						[ 'cc', 'cd' ],
@@ -1936,7 +1937,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+----+----+----+
 					// | 40 | 41 | 42 | 43 | 44 | 45 |
 					// +----+----+----+----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ { contents: 'aa', colspan: 2 }, 'ac', 'ad', { contents: 'ae', rowspan: 2 }, '05' ],
 						[ 'ba', { contents: 'bb', colspan: 3, rowspan: 2 }, '15' ],
 						[ { contents: 'ca', rowspan: 2 }, 'ce', '25' ],
@@ -1991,7 +1992,7 @@ describe( 'table clipboard', () => {
 						[ 'cc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', 'ac', '03' ],
 						[ { contents: 'ba', colspan: 2, rowspan: 2 }, 'bc', '13' ],
 						[ 'cc', '23' ],
@@ -2044,7 +2045,7 @@ describe( 'table clipboard', () => {
 						[ 'cc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', 'ac', '03' ],
 						[ { contents: 'ba', colspan: 2, rowspan: 2 }, 'bc', '13' ],
 						[ 'cc', '23' ],
@@ -2105,7 +2106,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+
 					// | 40 | 41 | 42 |
 					// +----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', { contents: '01', rowspan: 2 }, '02' ],
 						[ '10', '12' ],
 						[ 'aa', 'ab', 'ac' ],
@@ -2156,7 +2157,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+
 					// | 40 | 41 | 42 |
 					// +----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02' ],
 						[ 'aa', 'ab', 'ac' ],
 						[ 'ba', 'bb', 'bc' ],
@@ -2207,7 +2208,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+
 					// | 40 | 41 | 42 |
 					// +----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', 'ac' ],
 						[ 'ba', 'bb', 'bc' ],
 						[ '20', { rowspan: 2, contents: '' }, '22' ],
@@ -2249,7 +2250,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+----+----+
 					// | 20 | 21 | ca | cb | 24 |
 					// +----+----+----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', 'aa', 'ab', '04' ],
 						[ { contents: '10', colspan: 2 }, 'ba', 'bb', '14' ],
 						[ '20', '21', 'ca', 'cb', '24' ]
@@ -2289,7 +2290,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+----+----+
 					// | 20 | ca | cb | 23 | 24 |
 					// +----+----+----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', 'aa', 'ab', '03', '04' ],
 						[ '10', 'ba', 'bb', '', '14' ],
 						[ '20', 'ca', 'cb', '23', '24' ]
@@ -2329,7 +2330,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+----+----+
 					// | ca | cb | 22 | 23 | 24 |
 					// +----+----+----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', '02', '03', '04' ],
 						[ 'ba', 'bb', { colspan: 2, contents: '' }, '14' ],
 						[ 'ca', 'cb', '22', '23', '24' ]
@@ -2368,7 +2369,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+
 					// | 20 | ba | bb |
 					// +----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ { contents: '00', rowspan: 2 }, '', '02' ],
 						[ 'aa', 'ab' ],
 						[ '20', 'ba', 'bb' ]
@@ -2407,7 +2408,7 @@ describe( 'table clipboard', () => {
 					// +    +----+----+
 					// |    |    | 22 |
 					// +----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', 'aa', 'ab' ],
 						[ { contents: '10', rowspan: 2 }, 'ba', 'bb' ],
 						[ '', '22' ]
@@ -2472,7 +2473,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+    +----+         +
 					// | 60 | 61 | 62 |    | 64 |         |
 					// +----+----+----+----+----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[
 							{ contents: '00', colspan: 2, rowspan: 3 },
 							{ contents: '', rowspan: 2 },
@@ -2504,7 +2505,7 @@ describe( 'table clipboard', () => {
 						[ 'ca', 'cb', 'cc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', '02', '03' ],
 						[ 'ba', 'bb', '12', '13' ],
 						[ '20', '21', '22', '23' ],
@@ -2531,7 +2532,7 @@ describe( 'table clipboard', () => {
 						[ 'ca', 'cb', 'cc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03' ],
 						[ '10', '11', '12', '13' ],
 						[ '20', '21', 'aa', 'ab' ],
@@ -2558,7 +2559,7 @@ describe( 'table clipboard', () => {
 						[ 'ca', 'cb', 'cc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03' ],
 						[ '10', 'aa', 'ab', '13' ],
 						[ '20', 'ba', 'bb', '23' ],
@@ -2585,7 +2586,7 @@ describe( 'table clipboard', () => {
 						[ 'ca', 'cb', 'cc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03' ],
 						[ '10', 'aa', 'ab', '13' ],
 						[ '20', '21', '22', '23' ],
@@ -2612,7 +2613,7 @@ describe( 'table clipboard', () => {
 						[ 'ca', 'cb', 'cc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03' ],
 						[ '10', 'aa', '12', '13' ],
 						[ '20', 'ba', '22', '23' ],
@@ -2641,7 +2642,7 @@ describe( 'table clipboard', () => {
 						[ 'ea', 'eb', 'ec', 'ed', 'ee' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', 'ac', 'ad' ],
 						[ 'ba', 'bb', 'bc', 'bd' ],
 						[ 'ca', 'cb', 'cc', 'cd' ],
@@ -2669,7 +2670,7 @@ describe( 'table clipboard', () => {
 						[ 'ba', 'bb', 'bc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03' ],
 						[ '10', { colspan: 2, contents: 'aa' }, '13' ],
 						[ '20', 'ba', 'bb', '23' ],
@@ -2699,7 +2700,7 @@ describe( 'table clipboard', () => {
 						[ { colspan: 2, contents: 'da' }, 'dc', 'dd' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', { colspan: 2, contents: 'ab' }, '03' ],
 						[ { colspan: 3, contents: 'ba' }, '13' ],
 						[ 'ca', 'cb', 'cc', '23' ],
@@ -2728,7 +2729,7 @@ describe( 'table clipboard', () => {
 						[ 'cb' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03' ],
 						[ '10', { rowspan: 2, contents: 'aa' }, 'ab', '13' ],
 						[ '20', 'bb', '23' ],
@@ -2758,7 +2759,7 @@ describe( 'table clipboard', () => {
 						[ 'da', 'db', 'dc', 'dd' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', { rowspan: 3, contents: 'ab' }, { rowspan: 2, contents: 'ac' }, 'ad' ],
 						[ { rowspan: 2, contents: 'ba' }, 'bd' ],
 						[ 'cc', 'cd' ],
@@ -2816,7 +2817,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+----+----+----+
 					// | 40 | 41 | 42 | 43 | 44 | 45 |
 					// +----+----+----+----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03', '04', '05' ],
 						[ '10', { contents: 'aa', colspan: 2 }, 'ac', '14', '15' ],
 						[ '20', 'ba', { contents: 'bb', colspan: 2, rowspan: 2 }, '24', '25' ],
@@ -2862,7 +2863,7 @@ describe( 'table clipboard', () => {
 						[ 'ca', 'cb', 'cc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', 'ac', 'aa', 'ab', '05' ],
 						[ 'ba', 'bb', 'bc', 'ba', 'bb', '15' ],
 						[ '20', '21', '22', '23', '24', '25' ],
@@ -2891,7 +2892,7 @@ describe( 'table clipboard', () => {
 						[ 'ca', 'cb', 'cc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', '02', '03', '04', '05' ],
 						[ 'ba', 'bb', '12', '13', '14', '15' ],
 						[ 'ca', 'cb', '22', '23', '24', '25' ],
@@ -2922,7 +2923,7 @@ describe( 'table clipboard', () => {
 						[ 'ca', 'cb', 'cc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', 'ac', 'aa', 'ab', '05' ],
 						[ 'ba', 'bb', 'bc', 'ba', 'bb', '15' ],
 						[ 'ca', 'cb', 'cc', 'ca', 'cb', '25' ],
@@ -2953,7 +2954,7 @@ describe( 'table clipboard', () => {
 						[ 'ca', 'cb', 'cc' ]
 					] );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03', '04', '05' ],
 						[ '10', 'aa', 'ab', 'ac', 'aa', 'ab' ],
 						[ '20', 'ba', 'bb', 'bc', 'ba', 'bb' ],
@@ -3027,7 +3028,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+----+----+----+
 					// | 60 | 61 | 62 | 63 | 64 | 65 |
 					// +----+----+----+----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', { contents: '03', rowspan: 2 }, '04', '05' ],
 						[ '10', '11', '12', '14', '15' ],
 						[ 'aa', 'ab', 'aa', 'ab', 'aa', '25' ],
@@ -3064,7 +3065,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+----+----+----+
 					// | 60 | 61 | 62 | 63 | 64 | 65 |
 					// +----+----+----+----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', 'aa', 'ab', 'aa', '05' ],
 						[ '10', '11', 'ba', 'bb', 'ba', '15' ],
 						[ '20', '21', 'aa', 'ab', 'aa', '25' ],
@@ -3135,7 +3136,7 @@ describe( 'table clipboard', () => {
 					// +----+    +----+----+----+    +----+
 					// | 80 |    | cb | cc      |    | cb |
 					// +----+----+----+----+----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ '00', '01', '02', '03', '04', '05', '06' ],
 						[ '10', { contents: 'aa', colspan: 4 }, { contents: 'aa', colspan: 2 } ],
 						[ '20', { contents: 'ba', rowspan: 4 }, { contents: 'bb', colspan: 3 }, { contents: 'ba', rowspan: 4 }, 'bb' ],
@@ -3180,7 +3181,7 @@ describe( 'table clipboard', () => {
 				// +----+----+----+----+
 				// | 30 | 31 | 32 | 33 |
 				// +----+----+----+----+
-				expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 					[ 'aa', 'ab', '02', '03' ],
 					[ 'ba', 'bb', '12', '13' ],
 					[ { contents: 'ca', colspan: 2 }, '22', '23' ],
@@ -3227,7 +3228,7 @@ describe( 'table clipboard', () => {
 				// +----+----+----+----+
 				// | 30 | 31 | 32 | 33 |
 				// +----+----+----+----+
-				expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 					[ 'aa', 'ab', { rowspan: 2, contents: 'ac' }, '03' ],
 					[ 'ba', 'bb', '13' ],
 					[ '20', '21', '22', '23' ],
@@ -3272,7 +3273,7 @@ describe( 'table clipboard', () => {
 				// +----+----+----+----+
 				// | 30 | 31 | 32 | 33 |
 				// +----+----+----+----+
-				expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 					[ 'aa', 'ab', '02', '03' ],
 					[ 'ba', 'bb', '12', '13' ],
 					[ '20', '21', '22', '23' ],
@@ -3320,7 +3321,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+----+
 					// | 30 | 31 | 32 | 33 |
 					// +----+----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', '02', '03' ],
 						[ 'ba', 'bb', '12', '13' ],
 						[ '20', '21', '22', '23' ],
@@ -3368,7 +3369,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+----+
 					// | 30 | 31 | 32 | 33 |
 					// +----+----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', '02', '03' ],
 						[ 'ba', 'bb', '12', '13' ],
 						[ '20', '21', '22', '23' ],
@@ -3419,7 +3420,7 @@ describe( 'table clipboard', () => {
 					// +----+----+----+----+
 					// | 30 | 31 | 32 | 33 |
 					// +----+----+----+----+
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 						[ 'aa', 'ab', '02', '03' ],
 						[ 'ba', 'bb', '12', '13' ],
 						[ '20', '21', '22', '23' ],
@@ -3486,7 +3487,7 @@ describe( 'table clipboard', () => {
 				// | 50 | 51 | 52 | 53 | 54 | 55 |
 				// +----+----+----+----+----+----+
 				//                ^-- heading columns
-				expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 					[ { contents: 'aa', colspan: 3, rowspan: 3 }, 'ad', '04', '05' ],
 					[ 'bd', '14', '15' ],
 					[ 'cd', '24', '25' ],
@@ -3545,7 +3546,7 @@ describe( 'table clipboard', () => {
 				// | 50 | 51 | 52 | 53 | 54 | 55 |
 				// +----+----+----+----+----+----+
 				//                ^-- heading columns
-				expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 					[ '00', '01', '02', '03', '04', '05' ],
 					[ '10', { contents: 'aa', colspan: 2, rowspan: 2 }, { contents: '', rowspan: 2 }, 'ad', '15' ],
 					[ '20', 'bd', '25' ],
@@ -3604,7 +3605,7 @@ describe( 'table clipboard', () => {
 				// | 50 | 51 | 52 | da | db | dc | dd |
 				// +----+----+----+----+----+----+----+
 				//                ^-- heading columns
-				expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 					[ '00', '01', '02', '03', '04', '05', '' ],
 					[ '10', '11', '12', '13', '14', '15', '' ],
 					[ '20', '21', '22', { contents: 'aa', colspan: 3 }, 'ad' ],
@@ -3665,7 +3666,7 @@ describe( 'table clipboard', () => {
 				// |    |    | da | db | dc | dd |
 				// +----+----+----+----+----+----+
 				//                ^-- heading columns
-				expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 					[ '00', '01', '02', '03', '04', '05' ],
 					[ '10', '11', '12', '13', '14', '15' ],
 					[ '20', '21', '22', '23', '24', '25' ],
@@ -3729,7 +3730,7 @@ describe( 'table clipboard', () => {
 				// |    |    | bc |         |
 				// +----+----+----+----+----+
 				//      ^-- heading columns
-				expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 					[ 'aa', '', 'ac', { contents: 'aa', colspan: 2 } ],
 					[ '', '', 'bc', { contents: '', colspan: 2 } ],
 					[ 'ca', 'cb', 'cc', 'ca', 'cb' ],
@@ -3782,7 +3783,7 @@ describe( 'table clipboard', () => {
 				[ 'ba', 'bb' ]
 			] );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ '<paragraph>a</paragraph><paragraph>a</paragraph><paragraph>a</paragraph>', 'ab', '02' ],
 				[ 'ba', 'bb', '12' ],
 				[ '02', '21', '22' ]
@@ -3808,7 +3809,7 @@ describe( 'table clipboard', () => {
 				[ 'ba', 'bb' ]
 			] );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ '<imageBlock src="/assets/sample.png"></imageBlock>', 'ab', '02' ],
 				[ 'ba', 'bb', '12' ],
 				[ '02', '21', '22' ]
@@ -3838,7 +3839,7 @@ describe( 'table clipboard', () => {
 				[ 'ba', 'bb' ]
 			] );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[
 					'<imageBlock src="/assets/sample.png"></imageBlock>' +
 					'<listItem listIndent="0" listType="bulleted">foo</listItem>' +
@@ -3876,11 +3877,11 @@ describe( 'table clipboard', () => {
 
 			const tableCell = model.document.getRoot().getNodeByPath( [ 0, 0, 0 ] );
 
-			expect( tableCell.getAttribute( 'tableCellBorderColor' ) ).to.equal( '#f00' );
-			expect( tableCell.getAttribute( 'tableCellBorderStyle' ) ).to.equal( 'solid' );
-			expect( tableCell.getAttribute( 'tableCellBorderWidth' ) ).to.equal( '1px' );
-			expect( tableCell.getAttribute( 'tableCellBackgroundColor' ) ).to.equal( '#ba7' );
-			expect( tableCell.getAttribute( 'tableCellWidth' ) ).to.equal( '1337px' );
+			expect( tableCell.getAttribute( 'borderColor' ) ).to.equal( '#f00' );
+			expect( tableCell.getAttribute( 'borderStyle' ) ).to.equal( 'solid' );
+			expect( tableCell.getAttribute( 'borderWidth' ) ).to.equal( '1px' );
+			expect( tableCell.getAttribute( 'backgroundColor' ) ).to.equal( '#ba7' );
+			expect( tableCell.getAttribute( 'width' ) ).to.equal( '1337px' );
 		} );
 
 		it( 'discards table properties', async () => {
@@ -3907,7 +3908,7 @@ describe( 'table clipboard', () => {
 			data.dataTransfer.setData( 'text/html', pastedTable );
 			viewDocument.fire( 'paste', data );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ 'aa', 'ab', '02' ],
 				[ 'ba', 'bb', '12' ],
 				[ '02', '21', '22' ]
@@ -3933,7 +3934,7 @@ describe( 'table clipboard', () => {
 				[ '&nbsp;', '&nbsp;' ]
 			], { headingRows: 1 } );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ '', '', '02' ],
 				[ '', '', '12' ],
 				[ '02', '21', '22' ]
@@ -3972,13 +3973,13 @@ describe( 'table clipboard', () => {
 			const tableModelData = modelTable( [
 				[ {
 					contents: '<paragraph>Test</paragraph>',
-					tableCellBorderColor: color,
-					tableCellBorderStyle: style,
-					tableCellBorderWidth: width
+					borderColor: color,
+					borderStyle: style,
+					borderWidth: width
 				} ]
 			] );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ tableModelData ]
 			] ) );
 		} );

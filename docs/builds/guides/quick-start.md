@@ -2,7 +2,7 @@
 # Scope:
 # * TL;DR I want to run CKEditor 5.
 
-category: builds-predefined
+category: builds-guides
 order: 30
 ---
 

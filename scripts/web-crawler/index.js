@@ -41,7 +41,6 @@ function parseArguments( args ) {
 		boolean: [
 			'docs',
 			'manual',
-			'spinner',
 			'quit'
 		],
 
@@ -51,10 +50,6 @@ function parseArguments( args ) {
 			e: 'exclusions',
 			c: 'concurrency',
 			q: 'quit'
-		},
-
-		default: {
-			spinner: true
 		}
 	};
 
@@ -101,7 +96,6 @@ function parseArguments( args ) {
 		depth: options.depth ? Number( options.depth ) : Infinity,
 		exclusions: options.exclusions ? toArray( options.exclusions ).filter( exclusion => exclusion.length > 0 ) : [],
 		concurrency: options.concurrency ? Number( options.concurrency ) : 1,
-		quit: Boolean( options.quit ),
-		noSpinner: !options.spinner
+		quit: Boolean( options.quit )
 	};
 }

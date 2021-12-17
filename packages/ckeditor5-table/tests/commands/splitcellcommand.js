@@ -6,6 +6,7 @@
 import ModelTestEditor from '@ckeditor/ckeditor5-core/tests/_utils/modeltesteditor';
 import Paragraph from '@ckeditor/ckeditor5-paragraph/src/paragraph';
 import { getData, setData } from '@ckeditor/ckeditor5-engine/src/dev-utils/model';
+import { assertEqualMarkup } from '@ckeditor/ckeditor5-utils/tests/_utils/utils';
 
 import TableEditing from '../../src/tableediting';
 import TableSelection from '../../src/tableselection';
@@ -94,7 +95,7 @@ describe( 'SplitCellCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00', { colspan: 2, contents: '01' }, '02' ],
 					[ '10', '[]11', '', '12' ],
 					[ '20', { colspan: 3, contents: '21' } ],
@@ -112,7 +113,7 @@ describe( 'SplitCellCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00', '01', '02' ],
 					[ '10', '11', '12' ],
 					[ '20', '21[]', '' ],
@@ -128,7 +129,7 @@ describe( 'SplitCellCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00', '01', '02' ],
 					[ { colspan: 2, contents: '10[]' }, '' ]
 				] ) );
@@ -142,7 +143,7 @@ describe( 'SplitCellCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00', '01', '02', '03' ],
 					[ { colspan: 2, contents: '10[]' }, { colspan: 2, contents: '' } ]
 				] ) );
@@ -157,7 +158,7 @@ describe( 'SplitCellCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00', '01', '02', '03', '04', '05' ],
 					[ { colspan: 3, rowspan: 2, contents: '10[]' }, { colspan: 2, rowspan: 2, contents: '' }, '15' ],
 					[ '25' ]
@@ -197,7 +198,7 @@ describe( 'SplitCellCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00', '01', '02' ],
 					[ { rowspan: 2, contents: '10' }, '[]11', { rowspan: 2, contents: '12' } ],
 					[ '' ],

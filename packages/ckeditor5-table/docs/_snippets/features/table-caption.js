@@ -11,7 +11,7 @@ ClassicEditor
 			CKEditorPlugins.TableCaption, CKEditorPlugins.Superscript
 		],
 		table: {
-			contentToolbar: [ 'toggleTableCaption', '|', 'tableColumn', 'tableRow', 'mergeTableCells' ]
+			contentToolbar: [ 'tableColumn', 'tableRow', 'mergeTableCells', 'toggleTableCaption' ]
 		},
 		image: {
 			toolbar: [
@@ -20,11 +20,6 @@ ClassicEditor
 				'|',
 				'imageTextAlternative'
 			]
-		},
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
 		}
 	} )
 	.then( editor => {

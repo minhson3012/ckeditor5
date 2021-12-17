@@ -78,15 +78,15 @@ msgstr ""
 
 msgctxt "The tooltip text of the button that toggles the \"circle\" list style."
 msgid "Circle"
-msgstr "Círculo"
+msgstr ""
 
 msgctxt "The tooltip text of the button that toggles the \"square\" list style."
 msgid "Square"
-msgstr "Cuadrado"
+msgstr ""
 
 msgctxt "The tooltip text of the button that toggles the \"decimal\" list style."
 msgid "Decimal"
-msgstr "Decimal"
+msgstr ""
 
 msgctxt "The tooltip text of the button that toggles the \"decimal with leading zero\" list style."
 msgid "Decimal with leading zero"

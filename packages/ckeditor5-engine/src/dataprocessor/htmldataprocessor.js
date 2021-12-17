@@ -28,23 +28,26 @@ export default class HtmlDataProcessor {
 		/**
 		 * A DOM parser instance used to parse an HTML string to an HTML document.
 		 *
+		 * @private
 		 * @member {DOMParser}
 		 */
-		this.domParser = new DOMParser();
+		this._domParser = new DOMParser();
 
 		/**
 		 * A DOM converter used to convert DOM elements to view elements.
 		 *
+		 * @private
 		 * @member {module:engine/view/domconverter~DomConverter}
 		 */
-		this.domConverter = new DomConverter( document, { renderingMode: 'data' } );
+		this._domConverter = new DomConverter( document, { blockFillerMode: 'nbsp' } );
 
 		/**
 		 * A basic HTML writer instance used to convert DOM elements to an HTML string.
 		 *
-		 * @member {module:engine/dataprocessor/htmlwriter~HtmlWriter}
+		 * @private
+		 * @member {module:engine/dataprocessor/basichtmlwriter~BasicHtmlWriter}
 		 */
-		this.htmlWriter = new BasicHtmlWriter();
+		this._htmlWriter = new BasicHtmlWriter();
 	}
 
 	/**
@@ -56,10 +59,10 @@ export default class HtmlDataProcessor {
 	 */
 	toData( viewFragment ) {
 		// Convert view DocumentFragment to DOM DocumentFragment.
-		const domFragment = this.domConverter.viewToDom( viewFragment, document );
+		const domFragment = this._domConverter.viewToDom( viewFragment, document );
 
 		// Convert DOM DocumentFragment to HTML output.
-		return this.htmlWriter.getHtml( domFragment );
+		return this._htmlWriter.getHtml( domFragment );
 	}
 
 	/**
@@ -73,7 +76,7 @@ export default class HtmlDataProcessor {
 		const domFragment = this._toDom( data );
 
 		// Convert DOM DocumentFragment to view DocumentFragment.
-		return this.domConverter.domToView( domFragment );
+		return this._domConverter.domToView( domFragment );
 	}
 
 	/**
@@ -87,7 +90,7 @@ export default class HtmlDataProcessor {
 	 * be treated as raw data.
 	 */
 	registerRawContentMatcher( pattern ) {
-		this.domConverter.registerRawContentMatcher( pattern );
+		this._domConverter.registerRawContentMatcher( pattern );
 	}
 
 	/**
@@ -102,7 +105,7 @@ export default class HtmlDataProcessor {
 	 * @param {'default'|'marked'} type Whether to use the default or the marked `&nbsp;` block fillers.
 	 */
 	useFillerType( type ) {
-		this.domConverter.blockFillerMode = type == 'marked' ? 'markedNbsp' : 'nbsp';
+		this._domConverter.blockFillerMode = type == 'marked' ? 'markedNbsp' : 'nbsp';
 	}
 
 	/**
@@ -114,7 +117,7 @@ export default class HtmlDataProcessor {
 	 * @returns {DocumentFragment}
 	 */
 	_toDom( data ) {
-		const document = this.domParser.parseFromString( data, 'text/html' );
+		const document = this._domParser.parseFromString( data, 'text/html' );
 		const fragment = document.createDocumentFragment();
 
 		// The rules for parsing an HTML string can be read on https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inhtml.

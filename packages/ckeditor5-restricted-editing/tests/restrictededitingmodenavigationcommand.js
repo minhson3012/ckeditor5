@@ -33,35 +33,11 @@ describe( 'RestrictedEditingModeNavigationCommand', () => {
 		return editor.destroy();
 	} );
 
-	describe( 'constructor()', () => {
-		it( 'should set public properties', () => {
-			expect( forwardCommand ).to.have.property( 'affectsData', false );
-		} );
-	} );
-
 	describe( 'forward command', () => {
 		describe( 'isEnabled', () => {
 			describe( 'collapsed selection', () => {
-				it( 'should be true when there is a marker after the selection position if editor is read-write', () => {
+				it( 'should be true when there is a marker after the selection position', () => {
 					setModelData( model, '<paragraph>[]foo bar baz</paragraph>' );
-
-					const paragraph = model.document.getRoot().getChild( 0 );
-
-					// <paragraph>[]foo <marker>bar</marker> baz</paragraph>
-					model.change( writer => {
-						writer.addMarker( 'restrictedEditingException:1', {
-							range: writer.createRange( writer.createPositionAt( paragraph, 4 ), writer.createPositionAt( paragraph, 7 ) ),
-							usingOperation: true,
-							affectsData: true
-						} );
-					} );
-
-					expect( forwardCommand.isEnabled ).to.be.true;
-				} );
-
-				it( 'should be true when there is a marker after the selection position if editor is read-only', () => {
-					setModelData( model, '<paragraph>[]foo bar baz</paragraph>' );
-					editor.isReadOnly = true;
 
 					const paragraph = model.document.getRoot().getChild( 0 );
 
@@ -147,26 +123,8 @@ describe( 'RestrictedEditingModeNavigationCommand', () => {
 			} );
 
 			describe( 'expanded selection', () => {
-				it( 'should be true when there is a marker after the first selection position if editor is read-write', () => {
+				it( 'should be true when there is a marker after the first selection position', () => {
 					setModelData( model, '<paragraph>[fo]o bar baz</paragraph>' );
-
-					const paragraph = model.document.getRoot().getChild( 0 );
-
-					// <paragraph>[fo]o <marker>bar</marker> baz</paragraph>
-					model.change( writer => {
-						writer.addMarker( 'restrictedEditingException:1', {
-							range: writer.createRange( writer.createPositionAt( paragraph, 4 ), writer.createPositionAt( paragraph, 7 ) ),
-							usingOperation: true,
-							affectsData: true
-						} );
-					} );
-
-					expect( forwardCommand.isEnabled ).to.be.true;
-				} );
-
-				it( 'should be true when there is a marker after the first selection position if editor is read-only', () => {
-					setModelData( model, '<paragraph>[fo]o bar baz</paragraph>' );
-					editor.isReadOnly = true;
 
 					const paragraph = model.document.getRoot().getChild( 0 );
 
@@ -373,30 +331,12 @@ describe( 'RestrictedEditingModeNavigationCommand', () => {
 	describe( 'backward command', () => {
 		describe( 'isEnabled', () => {
 			describe( 'collapsed selection', () => {
-				it( 'should be true when there is a marker before the selection position if editor is read-write', () => {
+				it( 'should be true when there is a marker before the selection position', () => {
 					setModelData( model, '<paragraph>foo bar baz[]</paragraph>' );
 
 					const paragraph = model.document.getRoot().getChild( 0 );
 
-					// <paragraph>foo <marker>bar</marker> baz[]</paragraph>
-					model.change( writer => {
-						writer.addMarker( 'restrictedEditingException:1', {
-							range: writer.createRange( writer.createPositionAt( paragraph, 4 ), writer.createPositionAt( paragraph, 7 ) ),
-							usingOperation: true,
-							affectsData: true
-						} );
-					} );
-
-					expect( backwardCommand.isEnabled ).to.be.true;
-				} );
-
-				it( 'should be true when there is a marker before the selection position if editor is read-only', () => {
-					setModelData( model, '<paragraph>foo bar baz[]</paragraph>' );
-					editor.isReadOnly = true;
-
-					const paragraph = model.document.getRoot().getChild( 0 );
-
-					// <paragraph>foo <marker>bar</marker> baz[]</paragraph>
+					// <paragraph>foo <marker>bar</marker> baz</paragraph>
 					model.change( writer => {
 						writer.addMarker( 'restrictedEditingException:1', {
 							range: writer.createRange( writer.createPositionAt( paragraph, 4 ), writer.createPositionAt( paragraph, 7 ) ),
@@ -478,30 +418,12 @@ describe( 'RestrictedEditingModeNavigationCommand', () => {
 			} );
 
 			describe( 'expanded selection', () => {
-				it( 'should be true when there is a marker before the first selection position if editor is read-write', () => {
+				it( 'should be true when there is a marker before the first selection position', () => {
 					setModelData( model, '<paragraph>foo bar b[az]</paragraph>' );
 
 					const paragraph = model.document.getRoot().getChild( 0 );
 
-					// <paragraph>foo <marker>bar</marker> b[az]</paragraph>
-					model.change( writer => {
-						writer.addMarker( 'restrictedEditingException:1', {
-							range: writer.createRange( writer.createPositionAt( paragraph, 4 ), writer.createPositionAt( paragraph, 7 ) ),
-							usingOperation: true,
-							affectsData: true
-						} );
-					} );
-
-					expect( backwardCommand.isEnabled ).to.be.true;
-				} );
-
-				it( 'should be true when there is a marker before the first selection position if editor is read-only', () => {
-					setModelData( model, '<paragraph>foo bar b[az]</paragraph>' );
-					editor.isReadOnly = true;
-
-					const paragraph = model.document.getRoot().getChild( 0 );
-
-					// <paragraph>foo <marker>bar</marker> b[az]</paragraph>
+					// <paragraph>[fo]o <marker>bar</marker> b[az]</paragraph>
 					model.change( writer => {
 						writer.addMarker( 'restrictedEditingException:1', {
 							range: writer.createRange( writer.createPositionAt( paragraph, 4 ), writer.createPositionAt( paragraph, 7 ) ),

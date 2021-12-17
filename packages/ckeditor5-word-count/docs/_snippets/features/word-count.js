@@ -27,12 +27,8 @@ ClassicEditor
 				'|',
 				'undo',
 				'redo'
-			]
-		},
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+			],
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		},
 		table: {
 			contentToolbar: [ 'tableColumn', 'tableRow', 'mergeTableCells' ]

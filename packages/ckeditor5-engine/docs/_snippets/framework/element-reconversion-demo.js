@@ -343,12 +343,8 @@ ClassicEditor
 			]
 		},
 		toolbar: {
-			items: [ 'heading', '|', 'bold', 'italic', '|', 'insertCard' ]
-		},
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+			items: [ 'heading', '|', 'bold', 'italic', '|', 'insertCard' ],
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		}
 	} )
 	.then( editor => {

@@ -122,10 +122,10 @@ describe( 'FindAndReplaceUI', () => {
 			} );
 
 			describe( 'upon dropdown close', () => {
-				it( 'the form should be focused', () => {
+				it( 'the editing view should be focused', () => {
 					dropdown.isOpen = true;
 
-					const spy = sinon.spy( form, 'focus' );
+					const spy = sinon.spy( editor.editing.view, 'focus' );
 
 					dropdown.isOpen = false;
 

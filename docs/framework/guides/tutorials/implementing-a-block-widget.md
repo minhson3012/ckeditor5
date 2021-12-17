@@ -33,12 +33,11 @@ First, install packages needed to build and set up a basic CKEditor 5 instance.
 
 ```bash
 npm install --save \
-	css-loader@5 \
-	postcss-loader@4 \
-	raw-loader@4 \
-	style-loader@2 \
-	webpack@5 \
-	webpack-cli@4 \
+	postcss-loader@3 \
+	raw-loader@3 \
+	style-loader@1 \
+	webpack@4 \
+	webpack-cli@3 \
 	@ckeditor/ckeditor5-dev-utils \
 	@ckeditor/ckeditor5-editor-classic \
 	@ckeditor/ckeditor5-essentials \
@@ -85,18 +84,15 @@ module.exports = {
 							}
 						}
 					},
-					'css-loader',
 					{
 						loader: 'postcss-loader',
-						options: {
-							postcssOptions: styles.getPostCssConfig( {
-								themeImporter: {
-									themePath: require.resolve( '@ckeditor/ckeditor5-theme-lark' )
-								},
-								minify: true
-							} )
-						}
-					}
+						options: styles.getPostCssConfig( {
+							themeImporter: {
+								themePath: require.resolve( '@ckeditor/ckeditor5-theme-lark' )
+							},
+							minify: true
+						} )
+					},
 				]
 			}
 		]

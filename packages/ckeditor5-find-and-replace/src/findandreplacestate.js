@@ -12,20 +12,13 @@ import { ObservableMixin, mix, Collection } from 'ckeditor5/src/utils';
 /**
  * The object storing find and replace plugin state for a given editor instance.
  *
- * @mixes module:utils/observablemixin~ObservableMixin
  */
 export default class FindAndReplaceState {
-	/**
-	 * Creates an instance of the state.
-	 *
-	 * @param {module:engine/model/model~Model} model
-	 */
 	constructor( model ) {
 		/**
 		 * A collection of find matches.
 		 *
-		 * @protected
-		 * @observable
+		 * @private
 		 * @member {module:utils/collection~Collection} #results
 		 */
 		this.set( 'results', new Collection() );
@@ -101,11 +94,6 @@ export default class FindAndReplaceState {
 		} );
 	}
 
-	/**
-	 * Cleans the state up and removes markers from the model.
-	 *
-	 * @param {module:engine/model/model~Model} model
-	 */
 	clear( model ) {
 		this.searchText = '';
 

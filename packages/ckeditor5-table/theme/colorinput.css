@@ -23,9 +23,6 @@
 	}
 
 	& .ck.ck-input-color__button {
-		/* Resolving issue with misaligned buttons on Safari (see #10589) */
-		display: flex;
-
 		& .ck.ck-input-color__button__preview {
 			position: relative;
 			overflow: hidden;

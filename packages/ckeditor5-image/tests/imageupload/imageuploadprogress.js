@@ -19,12 +19,15 @@ import { createNativeFileMock, NativeFileReaderMock, UploadAdapterMock } from '@
 import { setData as setModelData } from '@ckeditor/ckeditor5-engine/src/dev-utils/model';
 import { getData as getViewData } from '@ckeditor/ckeditor5-engine/src/dev-utils/view';
 import testUtils from '@ckeditor/ckeditor5-core/tests/_utils/utils';
+import svgPlaceholder from '../../theme/icons/image_placeholder.svg';
 import ImageInlineEditing from '../../src/image/imageinlineediting';
 
 describe( 'ImageUploadProgress', () => {
+	const imagePlaceholder = encodeURIComponent( svgPlaceholder );
+
 	// eslint-disable-next-line max-len
 	const base64Sample = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
-	let editor, model, doc, fileRepository, view, nativeReaderMock, loader, adapterMock, imagePlaceholder;
+	let editor, model, doc, fileRepository, view, nativeReaderMock, loader, adapterMock;
 
 	class UploadAdapterPluginMock extends Plugin {
 		init() {
@@ -67,8 +70,6 @@ describe( 'ImageUploadProgress', () => {
 
 					return adapterMock;
 				};
-
-				imagePlaceholder = editor.plugins.get( 'ImageUploadProgress' ).placeholder;
 			} );
 	} );
 
@@ -78,7 +79,7 @@ describe( 'ImageUploadProgress', () => {
 
 		expect( getViewData( view ) ).to.equal(
 			'<p>[<span class="ck-appear ck-image-upload-placeholder ck-widget image-inline" contenteditable="false">' +
-				`<img src="${ imagePlaceholder }"></img>` +
+				`<img src="data:image/svg+xml;utf8,${ imagePlaceholder }"></img>` +
 				'<div class="ck-upload-placeholder-loader"></div>' +
 			'</span>}foo</p>'
 		);
@@ -195,7 +196,7 @@ describe( 'ImageUploadProgress', () => {
 
 		expect( getViewData( view ) ).to.equal(
 			'[<figure class="ck-appear ck-image-upload-placeholder ck-widget image" contenteditable="false">' +
-				`<img src="${ imagePlaceholder }"></img>` +
+				`<img src="data:image/svg+xml;utf8,${ imagePlaceholder }"></img>` +
 				'<div class="ck-upload-placeholder-loader"></div>' +
 			'</figure>]'
 		);
@@ -218,7 +219,7 @@ describe( 'ImageUploadProgress', () => {
 
 		expect( getViewData( view ) ).to.equal(
 			'[<figure class="ck-widget image" contenteditable="false">' +
-				`<img src="${ imagePlaceholder }"></img>` +
+				`<img src="data:image/svg+xml;utf8,${ imagePlaceholder }"></img>` +
 			'</figure>]'
 		);
 	} );
@@ -322,7 +323,7 @@ describe( 'ImageUploadProgress', () => {
 
 		expect( getViewData( view ) ).to.equal(
 			'[<figure class="ck-appear ck-image-upload-placeholder ck-widget image" contenteditable="false">' +
-				`<img src="${ imagePlaceholder }"></img>` +
+				`<img src="data:image/svg+xml;utf8,${ imagePlaceholder }"></img>` +
 				'<div class="ck-upload-placeholder-loader"></div>' +
 			'</figure>]'
 		);
@@ -333,7 +334,7 @@ describe( 'ImageUploadProgress', () => {
 
 		expect( getViewData( view ) ).to.equal(
 			'[<figure class="ck-widget image" contenteditable="false">' +
-				`<img src="${ imagePlaceholder }"></img>` +
+				`<img src="data:image/svg+xml;utf8,${ imagePlaceholder }"></img>` +
 			'</figure>]'
 		);
 	} );
@@ -351,7 +352,7 @@ describe( 'ImageUploadProgress', () => {
 
 		expect( getViewData( newEditor.editing.view ) ).to.equal(
 			'<p>[<span class="ck-appear ck-image-upload-placeholder ck-widget image-inline" contenteditable="false">' +
-				`<img src="${ imagePlaceholder }"></img>` +
+				`<img src="data:image/svg+xml;utf8,${ imagePlaceholder }"></img>` +
 				'<div class="ck-upload-placeholder-loader"></div>' +
 			'</span>}foo</p>'
 		);
@@ -372,7 +373,7 @@ describe( 'ImageUploadProgress', () => {
 
 		expect( getViewData( newEditor.editing.view ) ).to.equal(
 			'[<figure class="ck-appear ck-image-upload-placeholder ck-widget image" contenteditable="false">' +
-				`<img src="${ imagePlaceholder }"></img>` +
+				`<img src="data:image/svg+xml;utf8,${ imagePlaceholder }"></img>` +
 				'<div class="ck-upload-placeholder-loader"></div>' +
 			'</figure>]<p>foo</p>'
 		);

@@ -535,9 +535,8 @@ describe( 'MutationObserver', () => {
 
 	describe( 'UIElement integration', () => {
 		const renderStub = sinon.stub();
-
 		function createUIElement( name ) {
-			const element = new UIElement( viewDocument, name );
+			const element = new UIElement( name );
 
 			element.render = function( domDocument ) {
 				const root = this.toDomElement( domDocument );
@@ -595,9 +594,8 @@ describe( 'MutationObserver', () => {
 
 	describe( 'RawElement integration', () => {
 		const renderStub = sinon.stub();
-
 		function createRawElement( name ) {
-			const element = new RawElement( viewDocument, name );
+			const element = new RawElement( name );
 
 			element.render = function( domElement ) {
 				domElement.innerHTML = 'foo bar';

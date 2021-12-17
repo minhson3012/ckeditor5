@@ -62,10 +62,8 @@ ClassicEditor
 	.create( document.querySelector( '#snippet-div-attributes' ), {
 		cloudServices: CS_CONFIG,
 		extraPlugins: [ ConvertDivAttributes ],
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+		toolbar: {
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		}
 	} )
 	.then( editor => {

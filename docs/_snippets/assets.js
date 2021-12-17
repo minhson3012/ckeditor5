@@ -5,8 +5,11 @@
 
 /* global console, window, document */
 
+import tippy from 'tippy.js';
 import isRelativeUrl from 'is-relative-url';
 
+import 'tippy.js/dist/tippy.css';
+import 'tippy.js/themes/light-border.css';
 import './tour-balloon.css';
 
 /**
@@ -65,7 +68,9 @@ window.attachTourBalloon = function( { target, text, editor, tippyOptions } ) {
 		<button class="ck ck-button tippy-content__close-button ck-off" title="Close"></button>
 	`;
 
-	const options = Object.assign( {}, tippyOptions, {
+	const tooltip = tippy( target, {
+		content,
+		theme: 'light-border',
 		placement: 'bottom',
 		trigger: 'manual',
 		hideOnClick: false,
@@ -73,12 +78,20 @@ window.attachTourBalloon = function( { target, text, editor, tippyOptions } ) {
 		maxWidth: 280,
 		showOnCreate: true,
 		interactive: true,
-		theme: 'light-border',
 		zIndex: 1,
-		appendTo: () => document.body
+		appendTo: () => document.body,
+		...tippyOptions
 	} );
 
-	const tooltip = window.umberto.createTooltip( target, content, options );
+	const closeButton = tooltip.popper.querySelector( '.tippy-content__close-button' );
+
+	closeButton.addEventListener( 'click', () => {
+		tooltip.hide();
+	} );
+
+	target.addEventListener( 'click', () => {
+		tooltip.hide();
+	} );
 
 	for ( const root of editor.editing.view.document.roots ) {
 		root.once( 'change:isFocused', ( evt, name, isFocused ) => {

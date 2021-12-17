@@ -415,12 +415,7 @@ MultirootEditor
 			footerleft: 'Left footer content',
 			footerright: 'Right footer content'
 		},
-		cloudServices: CS_CONFIG,
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
-		}
+		cloudServices: CS_CONFIG
 	} )
 	.then( newEditor => {
 		document.querySelector( '#toolbar' ).appendChild( newEditor.ui.view.toolbar.element );

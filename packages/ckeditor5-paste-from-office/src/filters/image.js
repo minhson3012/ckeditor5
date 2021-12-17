@@ -66,10 +66,6 @@ function findAllShapesIds( documentFragment, writer ) {
 	const shapesIds = [];
 
 	for ( const value of range ) {
-		if ( value.type != 'elementStart' ) {
-			continue;
-		}
-
 		const el = value.item;
 		const prevSiblingName = el.previousSibling && el.previousSibling.name || null;
 
@@ -129,7 +125,7 @@ function removeAllShapeElements( documentFragment, writer ) {
 	const shapes = [];
 
 	for ( const value of range ) {
-		if ( value.type == 'elementStart' && shapeElementsMatcher.match( value.item ) ) {
+		if ( shapeElementsMatcher.match( value.item ) ) {
 			shapes.push( value.item );
 		}
 	}

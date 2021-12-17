@@ -21,10 +21,8 @@ ClassicEditor
 	.create( document.querySelector( '#snippet-heading-class' ), {
 		cloudServices: CS_CONFIG,
 		extraPlugins: [ AddClassToAllHeading1 ],
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+		toolbar: {
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		}
 	} )
 	.then( editor => {

@@ -148,10 +148,6 @@ export default function blockAutoformatEditing( editor, plugin, pattern, callbac
 				}
 			}
 			range.detach();
-
-			editor.model.enqueueChange( () => {
-				editor.plugins.get( 'Delete' ).requestUndoOnBackspace();
-			} );
 		} );
 	} );
 }

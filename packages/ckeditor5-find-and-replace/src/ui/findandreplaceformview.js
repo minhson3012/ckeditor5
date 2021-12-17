@@ -28,8 +28,7 @@ import {
 	FocusTracker,
 	KeystrokeHandler,
 	Collection,
-	Rect,
-	isVisible
+	Rect
 } from 'ckeditor5/src/utils';
 
 // See: #8833.
@@ -355,16 +354,6 @@ export default class FindAndReplaceFormView extends View {
 	}
 
 	/**
-	 * @inheritDoc
-	 */
-	destroy() {
-		super.destroy();
-
-		this._focusTracker.destroy();
-		this._keystrokes.destroy();
-	}
-
-	/**
 	 * Focuses the fist {@link #_focusables} in the form.
 	 */
 	focus() {
@@ -514,7 +503,7 @@ export default class FindAndReplaceFormView extends View {
 			const inputElement = this._findInputView.fieldView.element;
 
 			// Don't adjust the padding if the input (also: counter) were not rendered or not inserted into DOM yet.
-			if ( !inputElement || !isVisible( inputElement ) ) {
+			if ( !inputElement || !inputElement.offsetParent ) {
 				return;
 			}
 
@@ -736,7 +725,7 @@ export default class FindAndReplaceFormView extends View {
 					this._findButtonView.fire( 'execute' );
 				}
 				stopPropagationAndPreventDefault( event );
-			} else if ( target === this._replaceInputView.fieldView.element && !this.isDirty ) {
+			} else if ( target === this._replaceInputView.fieldView.element ) {
 				this._replaceButtonView.fire( 'execute' );
 				stopPropagationAndPreventDefault( event );
 			}

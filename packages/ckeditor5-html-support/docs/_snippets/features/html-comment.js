@@ -20,11 +20,6 @@ ClassicEditor
 		},
 		table: {
 			contentToolbar: [ 'tableColumn', 'tableRow', 'mergeTableCells' ]
-		},
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
 		}
 	} )
 	.then( editor => {

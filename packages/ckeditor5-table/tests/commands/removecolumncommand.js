@@ -6,6 +6,7 @@
 import ModelTestEditor from '@ckeditor/ckeditor5-core/tests/_utils/modeltesteditor';
 import Paragraph from '@ckeditor/ckeditor5-paragraph/src/paragraph';
 import { getData, setData } from '@ckeditor/ckeditor5-engine/src/dev-utils/model';
+import { assertEqualMarkup } from '@ckeditor/ckeditor5-utils/tests/_utils/utils';
 
 import TableEditing from '../../src/tableediting';
 import TableSelection from '../../src/tableselection';
@@ -116,7 +117,7 @@ describe( 'RemoveColumnCommand', () => {
 
 			command.execute();
 
-			expect( getData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getData( model ), modelTable( [
 				[ '00', '02' ],
 				[ '10', '[]12' ],
 				[ '20', '22' ]
@@ -132,7 +133,7 @@ describe( 'RemoveColumnCommand', () => {
 
 			command.execute();
 
-			expect( getData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getData( model ), modelTable( [
 				[ '[]01' ],
 				[ '11' ],
 				[ '21' ]
@@ -157,7 +158,7 @@ describe( 'RemoveColumnCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '01' ],
 					[ '11' ],
 					[ '[]21' ],
@@ -182,7 +183,7 @@ describe( 'RemoveColumnCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00', '02' ],
 					[ '10', '12' ],
 					[ '20', '[]22' ],
@@ -207,7 +208,7 @@ describe( 'RemoveColumnCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00' ],
 					[ '[]10' ],
 					[ '20' ],
@@ -232,7 +233,7 @@ describe( 'RemoveColumnCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '02' ],
 					[ '[]12' ],
 					[ '22' ],
@@ -257,7 +258,7 @@ describe( 'RemoveColumnCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00', '03' ],
 					[ '10', '13' ],
 					[ '20', '[]23' ],
@@ -282,7 +283,7 @@ describe( 'RemoveColumnCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00', '03' ],
 					[ '10', '13' ],
 					[ '20', '[]23' ],
@@ -308,7 +309,7 @@ describe( 'RemoveColumnCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00' ],
 					[ '[]10' ],
 					[ '20' ],
@@ -332,7 +333,7 @@ describe( 'RemoveColumnCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00', '04' ],
 					[ '10', '[]14' ]
 				], { headingColumns: 1 } ) );
@@ -354,7 +355,7 @@ describe( 'RemoveColumnCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00' ],
 					[ '[]12' ],
 					[ '22' ]
@@ -371,7 +372,7 @@ describe( 'RemoveColumnCommand', () => {
 
 			command.execute();
 
-			expect( getData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getData( model ), modelTable( [
 				[ '01' ],
 				[ '[]11' ],
 				[ '21' ]
@@ -389,7 +390,7 @@ describe( 'RemoveColumnCommand', () => {
 
 			command.execute();
 
-			expect( getData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getData( model ), modelTable( [
 				[ { colspan: 3, contents: '00' }, '04' ],
 				[ { colspan: 2, contents: '10' }, '13', '14' ],
 				[ { colspan: 2, contents: '20' }, '[]23', '24' ],
@@ -408,7 +409,7 @@ describe( 'RemoveColumnCommand', () => {
 
 			command.execute();
 
-			expect( getData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getData( model ), modelTable( [
 				[ { colspan: 2, contents: '[]00' }, '03' ],
 				[ '10', '12', '13' ],
 				[ '21', '22', '23' ]
@@ -424,7 +425,7 @@ describe( 'RemoveColumnCommand', () => {
 
 			command.execute();
 
-			expect( getData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getData( model ), modelTable( [
 				[ '00', '01' ],
 				[ '10', '[]11' ],
 				[ '20', '21' ]
@@ -439,7 +440,7 @@ describe( 'RemoveColumnCommand', () => {
 
 			command.execute();
 
-			expect( getData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getData( model ), modelTable( [
 				[ '[]00' ]
 			] ) );
 		} );
@@ -452,7 +453,7 @@ describe( 'RemoveColumnCommand', () => {
 
 			command.execute();
 
-			expect( getData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getData( model ), modelTable( [
 				[ '[]00' ]
 			] ) );
 		} );
@@ -465,7 +466,7 @@ describe( 'RemoveColumnCommand', () => {
 
 			command.execute();
 
-			expect( getData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getData( model ), modelTable( [
 				[ '[]01' ],
 				[ '11' ]
 			] ) );
@@ -479,7 +480,7 @@ describe( 'RemoveColumnCommand', () => {
 
 			command.execute();
 
-			expect( getData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getData( model ), modelTable( [
 				[ '[]01' ]
 			] ) );
 		} );
@@ -492,7 +493,7 @@ describe( 'RemoveColumnCommand', () => {
 
 			command.execute();
 
-			expect( getData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getData( model ), modelTable( [
 				[ '[]01' ]
 			] ) );
 		} );
@@ -505,7 +506,7 @@ describe( 'RemoveColumnCommand', () => {
 
 			command.execute();
 
-			expect( getData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getData( model ), modelTable( [
 				[ '[]00' ],
 				[ '10' ]
 			] ) );
@@ -520,7 +521,7 @@ describe( 'RemoveColumnCommand', () => {
 
 			command.execute();
 
-			expect( getData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getData( model ), modelTable( [
 				[ '[]01', '02' ],
 				[ '21', '22' ]
 			] ) );

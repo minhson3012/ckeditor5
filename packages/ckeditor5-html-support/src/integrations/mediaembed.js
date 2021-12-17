@@ -9,6 +9,7 @@
 
 import { Plugin } from 'ckeditor5/src/core';
 
+import { disallowedAttributesConverter } from '../converters';
 import { setViewAttributes } from '../conversionutils.js';
 import DataFilter from '../datafilter';
 import DataSchema from '../dataschema';
@@ -56,6 +57,7 @@ export default class MediaEmbedElementSupport extends Plugin {
 				]
 			} );
 
+			conversion.for( 'upcast' ).add( disallowedAttributesConverter( definition, dataFilter ) );
 			conversion.for( 'upcast' ).add( viewToModelMediaAttributesConverter( dataFilter, mediaElementName ) );
 			conversion.for( 'dataDowncast' ).add( modelToViewMediaAttributeConverter( mediaElementName ) );
 
@@ -66,18 +68,39 @@ export default class MediaEmbedElementSupport extends Plugin {
 
 function viewToModelMediaAttributesConverter( dataFilter, mediaElementName ) {
 	return dispatcher => {
+		// Here we want to be the first to convert (and consume) the figure element, otherwise GHS can pick it up and
+		// convert it to generic `htmlFigure`.
+		dispatcher.on( 'element:figure', upcastFigure, { priority: 'high' } );
+
+		// Handle media elements without `<figure>` container.
 		dispatcher.on( `element:${ mediaElementName }`, upcastMedia );
 	};
 
-	function upcastMedia( evt, data, conversionApi ) {
-		const viewMediaElement = data.viewItem;
-		const viewParent = viewMediaElement.parent;
+	function upcastFigure( evt, data, conversionApi ) {
+		const viewFigureElement = data.viewItem;
+
+		// Convert only "media figure" elements.
+		if ( !conversionApi.consumable.test( viewFigureElement, { name: true, classes: 'media' } ) ) {
+			return;
+		}
+
+		// Find media element.
+		const viewMediaElement = Array.from( viewFigureElement.getChildren() )
+			.find( item => item.is( 'element', mediaElementName ) );
+
+		// Do not convert if media element is absent.
+		if ( !viewMediaElement ) {
+			return;
+		}
+
+		// Convert just the media element.
+		Object.assign( data, conversionApi.convertItem( viewMediaElement, data.modelCursor ) );
 
 		preserveElementAttributes( viewMediaElement, 'htmlAttributes' );
+		preserveElementAttributes( viewFigureElement, 'htmlFigureAttributes' );
 
-		if ( viewParent.is( 'element', 'figure' ) && viewParent.hasClass( 'media' ) ) {
-			preserveElementAttributes( viewParent, 'htmlFigureAttributes' );
-		}
+		// Consume the figure to prevent converting it to `htmlFigure` by default GHS converters.
+		conversionApi.consumable.consume( viewFigureElement, { name: true } );
 
 		function preserveElementAttributes( viewElement, attributeName ) {
 			const viewAttributes = dataFilter._consumeAllowedAttributes( viewElement, conversionApi );
@@ -85,6 +108,15 @@ function viewToModelMediaAttributesConverter( dataFilter, mediaElementName ) {
 			if ( viewAttributes ) {
 				conversionApi.writer.setAttribute( attributeName, viewAttributes, data.modelRange );
 			}
+		}
+	}
+
+	function upcastMedia( evt, data, conversionApi ) {
+		const viewMediaElement = data.viewItem;
+		const viewAttributes = dataFilter._consumeAllowedAttributes( viewMediaElement, conversionApi );
+
+		if ( viewAttributes ) {
+			conversionApi.writer.setAttribute( 'htmlAttributes', viewAttributes, data.modelRange );
 		}
 	}
 }
@@ -101,7 +133,7 @@ function modelToViewMediaAttributeConverter( mediaElementName ) {
 				}
 
 				const containerElement = conversionApi.mapper.toViewElement( data.item );
-				const viewElement = getDescendantElement( conversionApi.writer, containerElement, elementName );
+				const viewElement = getDescendantElement( conversionApi, containerElement, elementName );
 
 				setViewAttributes( conversionApi.writer, data.attributeNewValue, viewElement );
 			} );
@@ -113,12 +145,12 @@ function modelToViewMediaAttributeConverter( mediaElementName ) {
 // Includes view element itself.
 //
 // @private
-// @param {module:engine/view/downcastwriter~DowncastWriter} writer
+// @param {module:engine/conversion/downcastdispatcher~DowncastConversionApi} conversionApi
 // @param {module:engine/view/element~Element} containerElement
 // @param {String} elementName
 // @returns {module:engine/view/element~Element|null}
-function getDescendantElement( writer, containerElement, elementName ) {
-	const range = writer.createRangeOn( containerElement );
+function getDescendantElement( conversionApi, containerElement, elementName ) {
+	const range = conversionApi.writer.createRangeOn( containerElement );
 
 	for ( const { item } of range.getWalker() ) {
 		if ( item.is( 'element', elementName ) ) {

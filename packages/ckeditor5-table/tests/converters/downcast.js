@@ -8,7 +8,8 @@ import Paragraph from '@ckeditor/ckeditor5-paragraph/src/paragraph';
 import UndoEditing from '@ckeditor/ckeditor5-undo/src/undoediting';
 import testUtils from '@ckeditor/ckeditor5-core/tests/_utils/utils';
 import { getData as getViewData } from '@ckeditor/ckeditor5-engine/src/dev-utils/view';
-import { getData as getModelData, setData as setModelData } from '@ckeditor/ckeditor5-engine/src/dev-utils/model';
+import { setData as setModelData } from '@ckeditor/ckeditor5-engine/src/dev-utils/model';
+import { assertEqualMarkup } from '@ckeditor/ckeditor5-utils/tests/_utils/utils';
 import { modelTable, viewTable } from '../_utils/utils';
 
 import TableEditing from '../../src/tableediting';
@@ -35,7 +36,7 @@ describe( 'downcast converters', () => {
 			it( 'should create table as a widget', () => {
 				setModelData( model, modelTable( [ [ '' ] ] ) );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 						'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -59,7 +60,7 @@ describe( 'downcast converters', () => {
 					[ '10' ]
 				], { headingRows: 1 } ) );
 
-				expect( editor.getData() ).to.equalMarkup(
+				assertEqualMarkup( editor.getData(),
 					'<figure class="table">' +
 						'<table>' +
 							'<thead>' +
@@ -79,7 +80,7 @@ describe( 'downcast converters', () => {
 					[ '10' ]
 				], { headingRows: 2 } ) );
 
-				expect( editor.getData() ).to.equalMarkup(
+				assertEqualMarkup( editor.getData(),
 					'<figure class="table">' +
 						'<table>' +
 							'<thead>' +
@@ -97,7 +98,7 @@ describe( 'downcast converters', () => {
 					[ '10', '11', '12', '13' ]
 				], { headingColumns: 3, headingRows: 1 } ) );
 
-				expect( editor.getData() ).to.equalMarkup(
+				assertEqualMarkup( editor.getData(),
 					'<figure class="table">' +
 						'<table>' +
 							'<thead>' +
@@ -116,7 +117,7 @@ describe( 'downcast converters', () => {
 					[ '<paragraph>00</paragraph><paragraph>foo</paragraph>', '01' ]
 				] ) );
 
-				expect( editor.getData() ).to.equalMarkup(
+				assertEqualMarkup( editor.getData(),
 					'<figure class="table">' +
 						'<table>' +
 							'<tbody>' +
@@ -146,7 +147,7 @@ describe( 'downcast converters', () => {
 					[ '<paragraph alignment="right">00</paragraph>' ]
 				] ) );
 
-				expect( editor.getData() ).to.equalMarkup(
+				assertEqualMarkup( editor.getData(),
 					'<figure class="table">' +
 						'<table>' +
 							'<tbody>' +
@@ -178,7 +179,7 @@ describe( 'downcast converters', () => {
 					'</block>'
 				);
 
-				expect( editor.getData() ).to.equalMarkup(
+				assertEqualMarkup( editor.getData(),
 					'<block>' +
 						'<figure class="table">' +
 							'<table>' +
@@ -210,7 +211,7 @@ describe( 'downcast converters', () => {
 
 				setModelData( model, modelTable( [ [ '' ] ] ) );
 
-				expect( editor.getData() ).to.equalMarkup(
+				assertEqualMarkup( editor.getData(),
 					'<table foo="bar">' +
 						'<tr><td><p>&nbsp;</p></td></tr>' +
 					'</table>'
@@ -226,7 +227,7 @@ describe( 'downcast converters', () => {
 
 				setModelData( model, modelTable( [ [ '[]' ] ] ) );
 
-				expect( editor.getData() ).to.equalMarkup(
+				assertEqualMarkup( editor.getData(),
 					'<figure class="table">' +
 						'<table>' +
 							'<tbody>' +
@@ -244,7 +245,7 @@ describe( 'downcast converters', () => {
 					writer.wrap( range, wrapper );
 				} );
 
-				expect( editor.getData() ).to.equalMarkup(
+				assertEqualMarkup( editor.getData(),
 					'<div>' +
 						'<figure class="table">' +
 							'<table>' +
@@ -264,7 +265,7 @@ describe( 'downcast converters', () => {
 						[ '10', '11', '12' ]
 					], { headingColumns: 2 } ) );
 
-					expect( editor.getData() ).to.equalMarkup(
+					assertEqualMarkup( editor.getData(),
 						'<figure class="table">' +
 							'<table>' +
 								'<tbody>' +
@@ -282,7 +283,7 @@ describe( 'downcast converters', () => {
 						[ { colspan: 2, contents: '10' }, '12', '13' ]
 					], { headingColumns: 3 } ) );
 
-					expect( editor.getData() ).to.equalMarkup(
+					assertEqualMarkup( editor.getData(),
 						'<figure class="table">' +
 							'<table>' +
 								'<tbody>' +
@@ -315,7 +316,7 @@ describe( 'downcast converters', () => {
 						[ '32', '33' ]
 					], { headingColumns: 3 } ) );
 
-					expect( editor.getData() ).to.equalMarkup(
+					assertEqualMarkup( editor.getData(),
 						'<figure class="table">' +
 							'<table>' +
 								'<tbody>' +
@@ -333,7 +334,7 @@ describe( 'downcast converters', () => {
 			it( 'should create table with tbody', () => {
 				setModelData( model, modelTable( [ [ '' ] ] ) );
 
-				expect( editor.getData() ).to.equalMarkup(
+				assertEqualMarkup( editor.getData(),
 					'<figure class="table">' +
 						'<table>' +
 							'<tbody>' +
@@ -365,7 +366,7 @@ describe( 'downcast converters', () => {
 					writer.insertElement( 'tableCell', row, 'end' );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '00', '01' ],
 					[ '', '' ]
 				], { asWidget: true } ) );
@@ -387,7 +388,7 @@ describe( 'downcast converters', () => {
 					writer.insertElement( 'tableCell', row, 'end' );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '00', '01' ],
 					[ '', '' ]
 				], { asWidget: true } ) );
@@ -401,7 +402,7 @@ describe( 'downcast converters', () => {
 					writer.insertElement( 'tableCell', row, 'end' );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '00', '01' ],
 					[ '', '' ],
 					[ '', '' ]
@@ -426,7 +427,7 @@ describe( 'downcast converters', () => {
 					writer.insertElement( 'tableCell', row, 'end' );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '00', '01' ],
 					[ '', '' ],
 					[ '21', '22' ],
@@ -452,7 +453,7 @@ describe( 'downcast converters', () => {
 					writer.insertElement( 'tableCell', row, 'end' );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '00', '01' ],
 					[ '', '' ],
 					[ '21', '22' ],
@@ -476,11 +477,9 @@ describe( 'downcast converters', () => {
 
 					writer.insertElement( 'tableCell', row, 'end' );
 					writer.insertElement( 'tableCell', row, 'end' );
-
-					writer.setAttribute( 'headingRows', 3, table );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '00', '01' ],
 					[ '', '' ],
 					[ '21', '22' ],
@@ -504,7 +503,7 @@ describe( 'downcast converters', () => {
 					writer.insertElement( 'tableCell', row, 'end' );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ { rowspan: 2, contents: '00' }, '01' ],
 					[ '22' ],
 					[ '', '' ]
@@ -532,7 +531,7 @@ describe( 'downcast converters', () => {
 					writer.insert( writer.createElement( 'tableCell' ), secondRow, 'end' );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ { rowspan: 2, contents: '00', isHeading: true }, '01' ],
 					[ '22' ],
 					[ { contents: '', isHeading: true }, '' ],
@@ -552,7 +551,7 @@ describe( 'downcast converters', () => {
 					writer.insert( writer.createElement( 'tableCell' ), firstRow, 'end' );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 						'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -591,7 +590,7 @@ describe( 'downcast converters', () => {
 					writer.insertElement( 'tableCell', row, 1 );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '00', '', '01' ]
 				], { asWidget: true } ) );
 			} );
@@ -609,7 +608,7 @@ describe( 'downcast converters', () => {
 					writer.insertElement( 'tableCell', row, 1 );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ { colspan: 2, contents: '00' }, '', '13' ]
 				], { asWidget: true } ) );
 			} );
@@ -627,7 +626,7 @@ describe( 'downcast converters', () => {
 					writer.insertElement( 'tableCell', table.getChild( 1 ), 0 );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ { rowspan: 2, contents: '00' }, '', '01', '02' ],
 					[ '', '11', '12' ]
 				], { asWidget: true } ) );
@@ -649,7 +648,7 @@ describe( 'downcast converters', () => {
 					writer.setAttribute( 'colspan', 2, secondRow.getChild( 0 ) );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '00', '', '01' ],
 					[ { colspan: 2, contents: '10' }, '11' ]
 				], { asWidget: true } ) );
@@ -670,7 +669,7 @@ describe( 'downcast converters', () => {
 					writer.remove( firstRow.getChild( 1 ) );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ { colspan: 2, contents: '00' } ],
 					[ '10', '11' ]
 				], { asWidget: true } ) );
@@ -687,7 +686,7 @@ describe( 'downcast converters', () => {
 					writer.insert( writer.createElement( 'tableCell' ), row, 'end' );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 						'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -723,10 +722,10 @@ describe( 'downcast converters', () => {
 					writer.setAttribute( 'headingColumns', 1, table );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ { isHeading: true, contents: '00' }, '01' ],
 					[ { isHeading: true, contents: '10' }, '11' ]
-				], { asWidget: true } ) );
+				], { headingColumns: 1, asWidget: true } ) );
 			} );
 
 			it( 'should work for changing heading columns to a bigger number', () => {
@@ -741,7 +740,7 @@ describe( 'downcast converters', () => {
 					writer.setAttribute( 'headingColumns', 3, table );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ { isHeading: true, contents: '00' }, { isHeading: true, contents: '01' }, { isHeading: true, contents: '02' }, '03' ],
 					[ { isHeading: true, contents: '10' }, { isHeading: true, contents: '11' }, { isHeading: true, contents: '12' }, '13' ]
 				], { asWidget: true } ) );
@@ -759,10 +758,10 @@ describe( 'downcast converters', () => {
 					writer.setAttribute( 'headingColumns', 1, table );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ { isHeading: true, contents: '00' }, '01', '02', '03' ],
 					[ { isHeading: true, contents: '10' }, '11', '12', '13' ]
-				], { asWidget: true } ) );
+				], { headingColumns: 3, asWidget: true } ) );
 			} );
 
 			it( 'should work for removing heading columns', () => {
@@ -776,7 +775,7 @@ describe( 'downcast converters', () => {
 					writer.removeAttribute( 'headingColumns', table );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '00', '01' ],
 					[ '10', '11' ]
 				], { asWidget: true } ) );
@@ -792,7 +791,7 @@ describe( 'downcast converters', () => {
 					writer.setAttribute( 'headingColumns', 1, table );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false" headingColumns="1">' +
 					'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -826,7 +825,7 @@ describe( 'downcast converters', () => {
 					writer.insertElement( 'tableCell', table.getChild( 2 ), 1 );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[
 						{ isHeading: true, rowspan: 2, contents: '00' },
 						{ isHeading: true, contents: '01' },
@@ -858,7 +857,7 @@ describe( 'downcast converters', () => {
 					writer.setAttribute( 'headingRows', 1, table );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 						'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -894,7 +893,7 @@ describe( 'downcast converters', () => {
 					writer.setAttribute( 'headingRows', 2, table );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '00', '01' ],
 					[ '10', '11' ],
 					[ '20', '21' ]
@@ -914,7 +913,7 @@ describe( 'downcast converters', () => {
 					writer.setAttribute( 'headingRows', 2, table );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '00', '01' ],
 					[ '10', '11' ],
 					[ '20', '21' ]
@@ -935,7 +934,7 @@ describe( 'downcast converters', () => {
 					writer.setAttribute( 'headingRows', 2, table );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '00', '01' ],
 					[ '10', '11' ],
 					[ '20', '21' ],
@@ -955,7 +954,7 @@ describe( 'downcast converters', () => {
 					writer.removeAttribute( 'headingRows', table );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '00', '01' ],
 					[ '10', '11' ]
 				], { asWidget: true } ) );
@@ -973,7 +972,7 @@ describe( 'downcast converters', () => {
 					writer.setAttribute( 'headingRows', 2, table );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '00', '01' ],
 					[ '10', '11' ]
 				], { headingRows: 2, asWidget: true } ) );
@@ -997,7 +996,7 @@ describe( 'downcast converters', () => {
 					writer.insertElement( 'tableCell', tableRow, 'end' );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '', '' ],
 					[ '00', '01' ],
 					[ '10', '11' ]
@@ -1023,120 +1022,12 @@ describe( 'downcast converters', () => {
 					writer.insertElement( 'tableCell', tableRow, 'end' );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '00', '01' ],
 					[ '', '' ],
 					[ '10', '11' ],
 					[ '20', '21' ]
 				], { headingRows: 2, asWidget: true } ) );
-			} );
-
-			it( 'should reorder rows with header correctly - up direction', () => {
-				setModelData( model, modelTable( [
-					[ '00', '01', '02' ],
-					[ '10', '11', '12' ]
-				], { headingRows: 1 } ) );
-
-				const table = root.getChild( 0 );
-
-				editor.model.change( writer => {
-					writer.move(
-						writer.createRangeOn( table.getChild( 1 ) ),
-						writer.createPositionAt( table, 0 )
-					);
-				} );
-
-				expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
-					[ '10', '11', '12' ],
-					[ '00', '01', '02' ]
-				], { headingRows: 1 } ) );
-
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
-					[ '10', '11', '12' ],
-					[ '00', '01', '02' ]
-				], { headingRows: 1, asWidget: true } ) );
-			} );
-
-			it( 'should reorder rows with header correctly - down direction', () => {
-				setModelData( model, modelTable( [
-					[ '00', '01', '02' ],
-					[ '10', '11', '12' ]
-				], { headingRows: 1 } ) );
-
-				const table = root.getChild( 0 );
-
-				editor.model.change( writer => {
-					writer.move(
-						writer.createRangeOn( table.getChild( 0 ) ),
-						writer.createPositionAt( table, 2 )
-					);
-				} );
-
-				expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
-					[ '10', '11', '12' ],
-					[ '00', '01', '02' ]
-				], { headingRows: 1 } ) );
-
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
-					[ '10', '11', '12' ],
-					[ '00', '01', '02' ]
-				], { headingRows: 1, asWidget: true } ) );
-			} );
-
-			it( 'should reorder columns with header correctly - left direction', () => {
-				setModelData( model, modelTable( [
-					[ '00', '01', '02' ],
-					[ '10', '11', '12' ]
-				], { headingColumns: 1 } ) );
-
-				const table = root.getChild( 0 );
-
-				editor.model.change( writer => {
-					for ( const tableRow of table.getChildren() ) {
-						writer.move(
-							writer.createRangeOn( tableRow.getChild( 1 ) ),
-							writer.createPositionAt( tableRow, 0 )
-						);
-					}
-				} );
-
-				expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
-					[ '01', '00', '02' ],
-					[ '11', '10', '12' ]
-				], { headingColumns: 1 } ) );
-
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
-					[ { isHeading: true, contents: '01' }, '00', '02' ],
-					[ { isHeading: true, contents: '11' }, '10', '12' ]
-				], { asWidget: true } ) );
-			} );
-
-			it( 'should reorder columns with header correctly - right direction', () => {
-				setModelData( model, modelTable( [
-					[ '00', '01', '02' ],
-					[ '10', '11', '12' ]
-				], { headingColumns: 1 } ) );
-
-				const table = root.getChild( 0 );
-
-				editor.model.change( writer => {
-					for ( const tableRow of table.getChildren() ) {
-						writer.move(
-							writer.createRangeOn( tableRow.getChild( 0 ) ),
-							writer.createPositionAt( tableRow, 2 )
-						);
-					}
-				} );
-
-				expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
-					[ '01', '00', '02' ],
-					[ '11', '10', '12' ]
-				], { headingColumns: 1 } ) );
-
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
-					[ { isHeading: true, contents: '01' }, '00', '02' ],
-					[ { isHeading: true, contents: '11' }, '10', '12' ]
-				], { asWidget: true } ) );
 			} );
 
 			it( 'should create renamed cell as a widget', () => {
@@ -1148,7 +1039,7 @@ describe( 'downcast converters', () => {
 					writer.setAttribute( 'headingColumns', 1, table );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 					'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -1177,7 +1068,7 @@ describe( 'downcast converters', () => {
 					writer.setAttribute( 'headingRows', 2, table );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '00', '01' ],
 					[ '10', '11' ],
 					[ '20', '21' ]
@@ -1185,7 +1076,7 @@ describe( 'downcast converters', () => {
 
 				editor.execute( 'undo' );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup( viewTable( [
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ), viewTable( [
 					[ '00', '01' ],
 					[ '10', '11' ],
 					[ '20', '21' ]
@@ -1209,7 +1100,7 @@ describe( 'downcast converters', () => {
 					writer.remove( table.getChild( 1 ) );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 						'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -1240,7 +1131,7 @@ describe( 'downcast converters', () => {
 					writer.remove( table.getChild( 0 ) );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 						'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -1273,7 +1164,7 @@ describe( 'downcast converters', () => {
 					writer.remove( table.getChild( 0 ) );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 						'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -1306,7 +1197,7 @@ describe( 'downcast converters', () => {
 					writer.remove( table.getChild( 1 ) );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 						'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -1340,7 +1231,7 @@ describe( 'downcast converters', () => {
 					writer.setAttribute( 'headingRows', 0, table );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 					'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -1385,7 +1276,7 @@ describe( 'downcast converters', () => {
 					writer.remove( table.getChild( 0 ) );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 						'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -1416,7 +1307,7 @@ describe( 'downcast converters', () => {
 					writer.remove( table.getChild( 1 ) );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 						'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -1463,7 +1354,7 @@ describe( 'downcast converters', () => {
 					checkCustomPropertyForHighlight( editor.editing.mapper.toViewElement( cell ) );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 						'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -1482,7 +1373,7 @@ describe( 'downcast converters', () => {
 					writer.removeMarker( 'marker:yellow' );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 						'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -1519,7 +1410,7 @@ describe( 'downcast converters', () => {
 				const cell = root.getNodeByPath( [ 0, 1, 0 ] );
 				checkCustomPropertyForHighlight( editor.editing.mapper.toViewElement( cell ) );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 					'<div class="ck ck-widget__selection-handle"></div>' +
 					'<table>' +
@@ -1543,7 +1434,7 @@ describe( 'downcast converters', () => {
 					writer.removeMarker( 'marker:yellow' );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 						'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -1583,7 +1474,7 @@ describe( 'downcast converters', () => {
 				const cell = root.getNodeByPath( [ 0, 0, 1 ] );
 				checkCustomPropertyForHighlight( editor.editing.mapper.toViewElement( cell ) );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 						'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -1605,7 +1496,7 @@ describe( 'downcast converters', () => {
 					writer.removeMarker( 'marker:yellow' );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 						'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -1719,7 +1610,7 @@ describe( 'downcast converters', () => {
 					checkCustomPropertyForHighlight( editor.editing.mapper.toViewElement( cell ) );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 						'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -1739,7 +1630,7 @@ describe( 'downcast converters', () => {
 					writer.removeMarker( 'marker:yellow' );
 				} );
 
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
+				assertEqualMarkup( getViewData( view, { withoutSelection: true } ),
 					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
 						'<div class="ck ck-widget__selection-handle"></div>' +
 						'<table>' +
@@ -1756,117 +1647,15 @@ describe( 'downcast converters', () => {
 			} );
 		} );
 
-		describe( 'attributes in highlight descriptor', () => {
-			beforeEach( async () => {
-				editor = await VirtualTestEditor.create( { plugins: [ Paragraph, TableEditing ] } );
-
-				model = editor.model;
-				root = model.document.getRoot( 'main' );
-				view = editor.editing.view;
-
-				markerConversion( editor.conversion, [], { 'data-foo': 'bar', 'data-abc': 'xyz' } );
-			} );
-
-			it( 'should apply attributes on tableCell - on inserting a table', () => {
-				setModelData( model, modelTable( [ [ '00' ] ] ) );
-
-				model.change( writer => {
-					const cell = root.getNodeByPath( [ 0, 0, 0 ] );
-
-					writer.addMarker( 'marker:yellow', {
-						range: writer.createRangeOn( cell ),
-						usingOperation: false
-					} );
-
-					checkCustomPropertyForHighlight( editor.editing.mapper.toViewElement( cell ) );
-				} );
-
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
-					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
-						'<div class="ck ck-widget__selection-handle"></div>' +
-						'<table>' +
-							'<tbody>' +
-								'<tr>' +
-									'<td class="ck-editor__editable ck-editor__nested-editable highlight-yellow"' +
-										' contenteditable="true" data-abc="xyz" data-foo="bar">' +
-										'<span class="ck-table-bogus-paragraph">00</span>' +
-									'</td>' +
-								'</tr>' +
-							'</tbody>' +
-						'</table>' +
-					'</figure>'
-				);
-
-				model.change( writer => {
-					writer.removeMarker( 'marker:yellow' );
-				} );
-
-				expect( getViewData( view, { withoutSelection: true } ) ).to.equalMarkup(
-					'<figure class="ck-widget ck-widget_with-selection-handle table" contenteditable="false">' +
-						'<div class="ck ck-widget__selection-handle"></div>' +
-						'<table>' +
-							'<tbody>' +
-								'<tr>' +
-									'<td class="ck-editor__editable ck-editor__nested-editable" contenteditable="true">' +
-										'<span class="ck-table-bogus-paragraph">00</span>' +
-									'</td>' +
-								'</tr>' +
-							'</tbody>' +
-						'</table>' +
-					'</figure>'
-				);
-			} );
-
-			it( 'should preserve attributes on tableCell - when changing heading columns', () => {
-				setModelData( model, modelTable( [
-					[ '00', '01', '02', '03' ],
-					[ '10', '11', '12', '13' ]
-				], { headingColumns: 1 } ) );
-
-				const table = root.getChild( 0 );
-
-				model.change( writer => {
-					const cell = root.getNodeByPath( [ 0, 0, 1 ] );
-
-					writer.addMarker( 'marker:yellow', {
-						range: writer.createRangeOn( cell ),
-						usingOperation: false
-					} );
-				} );
-
-				model.change( writer => {
-					writer.setAttribute( 'headingColumns', 3, table );
-				} );
-
-				const cell = root.getNodeByPath( [ 0, 0, 1 ] );
-				const viewElement = editor.editing.mapper.toViewElement( cell );
-
-				expect( viewElement.getAttribute( 'data-foo' ) ).to.equal( 'bar' );
-				expect( viewElement.getAttribute( 'data-abc' ) ).to.equal( 'xyz' );
-
-				model.change( writer => {
-					writer.removeMarker( 'marker:yellow' );
-				} );
-
-				expect( viewElement.hasAttribute( 'data-foo' ) ).to.be.false;
-				expect( viewElement.hasAttribute( 'data-abc' ) ).to.be.false;
-			} );
-		} );
-
-		function markerConversion( conversion, extraClasses = null, extraAttributes ) {
+		function markerConversion( conversion, extraClasses = null ) {
 			conversion.for( 'editingDowncast' ).markerToHighlight( {
 				model: 'marker',
 				view: data => {
 					const className = 'highlight-' + data.markerName.split( ':' )[ 1 ];
-					const descriptor = {};
 
-					descriptor.classes = extraClasses ? [ ...extraClasses, className ] : className;
-
-					if ( extraAttributes ) {
-						descriptor.attributes = extraAttributes;
-					}
-
-					return descriptor;
+					return {
+						classes: extraClasses ? [ ...extraClasses, className ] : className
+					};
 				}
 			} );
 		}

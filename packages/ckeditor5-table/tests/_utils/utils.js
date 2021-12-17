@@ -3,6 +3,7 @@
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
+import { assertEqualMarkup } from '@ckeditor/ckeditor5-utils/tests/_utils/utils';
 import { setData } from '@ckeditor/ckeditor5-engine/src/dev-utils/model';
 import TableWalker from '../../src/tablewalker';
 
@@ -140,10 +141,6 @@ export function setTableWithObjectAttributes( model, attributes, cellContent ) {
  * @returns {String}
  */
 export function viewTable( tableData, attributes = {} ) {
-	if ( attributes.headingColumns ) {
-		throw new Error( 'The headingColumns attribute is not supported in viewTable util' );
-	}
-
 	const headingRows = attributes.headingRows || 0;
 	const asWidget = !!attributes.asWidget;
 
@@ -219,7 +216,7 @@ export function assertTableStyle( editor, tableStyle, figureStyle ) {
 	const tableStyleEntry = tableStyle ? ` style="${ tableStyle }"` : '';
 	const figureStyleEntry = figureStyle ? ` style="${ figureStyle }"` : '';
 
-	expect( editor.getData() ).to.equalMarkup(
+	assertEqualMarkup( editor.getData(),
 		`<figure class="table"${ figureStyleEntry }>` +
 			`<table${ tableStyleEntry }>` +
 				'<tbody><tr><td>foo</td></tr></tbody>' +
@@ -235,7 +232,7 @@ export function assertTableStyle( editor, tableStyle, figureStyle ) {
  * @param {String} [tableCellStyle=''] A style to assert on td.
  */
 export function assertTableCellStyle( editor, tableCellStyle ) {
-	expect( editor.getData() ).to.equalMarkup(
+	assertEqualMarkup( editor.getData(),
 		'<figure class="table"><table><tbody><tr>' +
 		`<td${ tableCellStyle ? ` style="${ tableCellStyle }"` : '' }>foo</td>` +
 		'</tr></tbody></table></figure>'

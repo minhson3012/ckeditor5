@@ -187,12 +187,9 @@ function getWebpackConfig() {
 					test: /\.css$/,
 					use: [
 						'style-loader',
-						'css-loader',
 						{
 							loader: 'postcss-loader',
-							options: {
-								postcssOptions: postCssConfig
-							}
+							options: postCssConfig
 						}
 					]
 				}

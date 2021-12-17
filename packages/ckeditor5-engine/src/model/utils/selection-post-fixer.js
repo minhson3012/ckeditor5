@@ -128,17 +128,9 @@ function tryFixingCollapsedRange( range, schema ) {
 
 	const nearestSelectionRange = schema.getNearestSelectionRange( originalPosition );
 
-	// This might be null, i.e. when the editor data is empty or the selection is inside a limit element
-	// that doesn't allow text inside.
-	// In the first case, there is no need to fix the selection range.
-	// In the second, let's go up to the outer selectable element
+	// This might be null ie when editor data is empty.
+	// In such cases there is no need to fix the selection range.
 	if ( !nearestSelectionRange ) {
-		const ancestorObject = originalPosition.getAncestors().reverse().find( item => schema.isObject( item ) );
-
-		if ( ancestorObject ) {
-			return Range._createOn( ancestorObject );
-		}
-
 		return null;
 	}
 
@@ -263,41 +255,34 @@ function checkSelectionOnNonLimitElements( start, end, schema ) {
 	return startIsOnBlock || endIsOnBlock;
 }
 
-/**
- * Returns a minimal non-intersecting array of ranges without duplicates.
- *
- * @param {Array.<module:engine/model/range~Range>} Ranges to merge.
- * @returns {Array.<module:engine/model/range~Range>} Array of unique and nonIntersecting ranges.
- */
-export function mergeIntersectingRanges( ranges ) {
-	const rangesToMerge = [ ...ranges ];
-	const rangeIndexesToRemove = new Set();
-	let currentRangeIndex = 1;
+// Returns a minimal non-intersecting array of ranges.
+//
+// @param {Array.<module:engine/model/range~Range>} ranges
+// @returns {Array.<module:engine/model/range~Range>}
+function mergeIntersectingRanges( ranges ) {
+	const nonIntersectingRanges = [];
 
-	while ( currentRangeIndex < rangesToMerge.length ) {
-		const currentRange = rangesToMerge[ currentRangeIndex ];
-		const previousRanges = rangesToMerge.slice( 0, currentRangeIndex );
+	// First range will always be fine.
+	nonIntersectingRanges.push( ranges.shift() );
 
-		for ( const [ previousRangeIndex, previousRange ] of previousRanges.entries() ) {
-			if ( rangeIndexesToRemove.has( previousRangeIndex ) ) {
-				continue;
-			}
+	for ( const range of ranges ) {
+		const previousRange = nonIntersectingRanges.pop();
 
-			if ( currentRange.isEqual( previousRange ) ) {
-				rangeIndexesToRemove.add( previousRangeIndex );
-			} else if ( currentRange.isIntersecting( previousRange ) ) {
-				rangeIndexesToRemove.add( previousRangeIndex );
-				rangeIndexesToRemove.add( currentRangeIndex );
+		if ( range.isEqual( previousRange ) ) {
+			// Use only one of two identical ranges.
+			nonIntersectingRanges.push( previousRange );
+		} else if ( range.isIntersecting( previousRange ) ) {
+			// Get the sum of two ranges.
+			const start = previousRange.start.isAfter( range.start ) ? range.start : previousRange.start;
+			const end = previousRange.end.isAfter( range.end ) ? previousRange.end : range.end;
 
-				const mergedRange = currentRange.getJoined( previousRange );
-				rangesToMerge.push( mergedRange );
-			}
+			const merged = new Range( start, end );
+			nonIntersectingRanges.push( merged );
+		} else {
+			nonIntersectingRanges.push( previousRange );
+			nonIntersectingRanges.push( range );
 		}
-
-		currentRangeIndex++;
 	}
-
-	const nonIntersectingRanges = rangesToMerge.filter( ( _, index ) => !rangeIndexesToRemove.has( index ) );
 
 	return nonIntersectingRanges;
 }

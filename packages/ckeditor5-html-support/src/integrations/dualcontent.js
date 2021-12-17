@@ -10,6 +10,7 @@
 import { Plugin } from 'ckeditor5/src/core';
 import { priorities } from 'ckeditor5/src/utils';
 import {
+	disallowedAttributesConverter,
 	modelToViewBlockAttributeConverter,
 	viewToModelBlockAttributeConverter
 } from '../converters';
@@ -132,6 +133,7 @@ export default class DualContentModelElementSupport extends Plugin {
 			allowAttributes: 'htmlAttributes'
 		} );
 
+		conversion.for( 'upcast' ).add( disallowedAttributesConverter( definition, dataFilter ) );
 		conversion.for( 'upcast' ).add( viewToModelBlockAttributeConverter( definition, dataFilter ) );
 		conversion.for( 'downcast' ).add( modelToViewBlockAttributeConverter( definition ) );
 	}

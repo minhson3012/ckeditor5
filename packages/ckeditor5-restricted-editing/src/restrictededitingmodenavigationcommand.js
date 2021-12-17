@@ -24,9 +24,6 @@ export default class RestrictedEditingModeNavigationCommand extends Command {
 	constructor( editor, direction ) {
 		super( editor );
 
-		// It does not affect data so should be enabled in read-only mode and in restricted editing mode.
-		this.affectsData = false;
-
 		/**
 		 * The direction of the command. Can be `'forward'` or `'backward'`.
 		 *

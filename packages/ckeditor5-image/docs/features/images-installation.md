@@ -1,7 +1,7 @@
 ---
 category: features-images
 menu-title: Installation
-order: 15
+order: 100
 modified_at: 2021-06-17
 ---
 

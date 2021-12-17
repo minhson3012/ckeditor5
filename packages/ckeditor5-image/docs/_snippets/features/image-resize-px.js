@@ -31,10 +31,8 @@ ClassicEditor
 			],
 			toolbar: [ 'resizeImage' ]
 		},
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+		toolbar: {
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		},
 		cloudServices: CS_CONFIG
 	} )

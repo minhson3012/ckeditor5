@@ -142,7 +142,10 @@ export default class ClassicEditorUI extends EditorUI {
 		// Set–up the sticky panel with toolbar.
 		view.stickyPanel.bind( 'isActive' ).to( this.focusTracker, 'isFocused' );
 		view.stickyPanel.limiterElement = view.element;
-		view.stickyPanel.bind( 'viewportTopOffset' ).to( this, 'viewportOffset', ( { top } ) => top );
+
+		if ( this._toolbarConfig.viewportTopOffset ) {
+			view.stickyPanel.viewportTopOffset = this._toolbarConfig.viewportTopOffset;
+		}
 
 		view.toolbar.fillFromConfig( this._toolbarConfig, this.componentFactory );
 
@@ -179,4 +182,3 @@ export default class ClassicEditorUI extends EditorUI {
 		}
 	}
 }
-

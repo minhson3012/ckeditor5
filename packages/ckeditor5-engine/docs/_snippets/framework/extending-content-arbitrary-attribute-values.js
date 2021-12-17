@@ -53,12 +53,8 @@ ClassicEditor
 		cloudServices: CS_CONFIG,
 		extraPlugins: [ HandleFontSizeValue ],
 		toolbar: {
-			items: [ 'heading', '|', 'bold', 'italic', '|', 'fontSize' ]
-		},
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+			items: [ 'heading', '|', 'bold', 'italic', '|', 'fontSize' ],
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		},
 		fontSize: {
 			options: [ 10, 12, 14, 'default', 18, 20, 22 ]

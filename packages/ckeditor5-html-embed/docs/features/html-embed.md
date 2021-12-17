@@ -133,19 +133,14 @@ In addition to using a sanitizer, you can use the built-in browser mechanism cal
 
 The {@link module:html-embed/htmlembed~HtmlEmbed} plugin registers:
 * The UI button component (`'htmlEmbed'`).
-* The `'htmlEmbed'` command implemented by {@link module:html-embed/htmlembedcommand~HtmlEmbedCommand}.
+* The `'updateHtmlEmbed'` command implemented by {@link module:html-embed/updatehtmlembedcommand~UpdateHtmlEmbedCommand}.
+* The `'insertHtmlEmbed'` command implemented by {@link module:html-embed/inserthtmlembedcommand~InsertHtmlEmbedCommand}.
 
-The command can be executed using the {@link module:core/editor/editor~Editor#execute `editor.execute()`} method:
+Both commands can be executed using the {@link module:core/editor/editor~Editor#execute `editor.execute()`} method:
 
 ```js
-// Inserts an empty HTML embed.
-editor.execute( 'htmlEmbed' );
-
-// Inserts an HTML embed with some initial content.
-editor.execute( 'htmlEmbed', '<b>Initial content</b>.' );
-
-// Updates the content of a selected HTML embed.
-editor.execute( 'htmlEmbed', '<b>New content.</b>' );
+editor.execute( 'insertHtmlEmbed' );
+editor.execute( 'updateHtmlEmbed', '<p>HTML string</p>' );
 ```
 
 <info-box>

@@ -244,11 +244,11 @@ describe( 'ImageBlockEditing', () => {
 					.to.equal( '<imageBlock src="/assets/sample.png"></imageBlock>' );
 			} );
 
-			it( 'should convert without src attribute', () => {
+			it( 'should not convert without src attribute', () => {
 				editor.setData( '<figure class="image"><img alt="alt text" /></figure>' );
 
 				expect( getModelData( model, { withoutSelection: true } ) )
-					.to.equal( '<imageBlock alt="alt text"></imageBlock>' );
+					.to.equal( '' );
 			} );
 
 			it( 'should not convert in wrong context', () => {
@@ -457,14 +457,10 @@ describe( 'ImageBlockEditing', () => {
 					expect( getModelData( model, { withoutSelection: true } ) ).to.equal( '<limit><div>foobar</div></limit>' );
 				} );
 
-				it( 'should convert and autohoist image element without src attribute', () => {
+				it( 'should not convert and autohoist image element without src attribute (which is not allowed by schema)', () => {
 					editor.setData( '<div>foo<img alt="foo" />bar</div>' );
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equal(
-						'<div>foo</div>' +
-						'<imageBlock alt="foo"></imageBlock>' +
-						'<div>bar</div>'
-					);
+					expect( getModelData( model, { withoutSelection: true } ) ).to.equal( '<div>foobar</div>' );
 				} );
 			} );
 		} );

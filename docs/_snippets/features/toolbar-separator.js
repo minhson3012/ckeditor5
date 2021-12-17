@@ -12,12 +12,7 @@ ClassicEditor
 		toolbar: {
 			items: [ 'bold', 'italic', '|', 'undo', 'redo', '|', 'numberedList', 'bulletedList' ]
 		},
-		cloudServices: CS_CONFIG,
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
-		}
+		cloudServices: CS_CONFIG
 	} )
 	.then( editor => {
 		window.editor = editor;

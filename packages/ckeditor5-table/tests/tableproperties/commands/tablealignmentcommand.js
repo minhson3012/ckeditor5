@@ -59,13 +59,13 @@ describe( 'table properties', () => {
 			describe( 'value', () => {
 				describe( 'collapsed selection', () => {
 					it( 'should be set if selected table has alignment property', () => {
-						setData( model, modelTable( [ [ '[]foo' ] ], { tableAlignment: 'left' } ) );
+						setData( model, modelTable( [ [ '[]foo' ] ], { alignment: 'left' } ) );
 
 						expect( command.value ).to.equal( 'left' );
 					} );
 
 					it( 'should be undefined if selected table has set the default value', () => {
-						setData( model, modelTable( [ [ '[]foo' ] ], { tableAlignment: 'center' } ) );
+						setData( model, modelTable( [ [ '[]foo' ] ], { alignment: 'center' } ) );
 
 						expect( command.value ).to.be.undefined;
 					} );
@@ -85,13 +85,13 @@ describe( 'table properties', () => {
 					} );
 
 					it( 'should be undefined if selected table has set the default value', () => {
-						setData( model, modelTable( [ [ 'f[o]o' ] ], { tableAlignment: 'center' } ) );
+						setData( model, modelTable( [ [ 'f[o]o' ] ], { alignment: 'center' } ) );
 
 						expect( command.value ).to.be.undefined;
 					} );
 
 					it( 'should be true is selection has table', () => {
-						setData( model, modelTable( [ [ 'f[o]o' ] ], { tableAlignment: 'left' } ) );
+						setData( model, modelTable( [ [ 'f[o]o' ] ], { alignment: 'left' } ) );
 
 						expect( command.value ).to.equal( 'left' );
 					} );
@@ -118,7 +118,7 @@ describe( 'table properties', () => {
 					} );
 
 					it( 'should change selected table alignment to a passed value', () => {
-						setData( model, modelTable( [ [ '[]foo' ] ], { tableAlignment: 'center' } ) );
+						setData( model, modelTable( [ [ '[]foo' ] ], { alignment: 'center' } ) );
 
 						command.execute( { value: 'right' } );
 
@@ -126,7 +126,7 @@ describe( 'table properties', () => {
 					} );
 
 					it( 'should remove alignment from a selected table if no value is passed', () => {
-						setData( model, modelTable( [ [ '[]foo' ] ], { tableAlignment: 'center' } ) );
+						setData( model, modelTable( [ [ '[]foo' ] ], { alignment: 'center' } ) );
 
 						command.execute();
 

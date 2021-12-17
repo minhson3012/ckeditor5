@@ -213,11 +213,6 @@ ClassicEditor
 		toolbar: [ 'heading', '|', 'bold', 'italic', 'numberedList', 'bulletedList', '|', 'placeholder' ],
 		placeholderConfig: {
 			types: [ 'date', 'color', 'first name', 'surname' ]
-		},
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
 		}
 	} )
 	.then( editor => {

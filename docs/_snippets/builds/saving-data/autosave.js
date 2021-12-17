@@ -16,10 +16,8 @@ document.querySelector( '#snippet-autosave-lag' ).addEventListener( 'change', ev
 ClassicEditor
 	.create( document.querySelector( '#snippet-autosave' ), {
 		cloudServices: CS_CONFIG,
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+		toolbar: {
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		},
 		autosave: {
 			save( editor ) {

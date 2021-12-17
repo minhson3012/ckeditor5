@@ -12,12 +12,9 @@ const inlineInjectElements = document.querySelectorAll( '#snippet-inline-editor 
 
 Array.from( inlineInjectElements ).forEach( inlineElement => {
 	const config = {
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+		toolbar: {
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		},
-		toolbar: {},
 		cloudServices: CS_CONFIG
 	};
 

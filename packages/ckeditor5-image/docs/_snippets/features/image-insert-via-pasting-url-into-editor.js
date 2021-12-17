@@ -10,12 +10,7 @@ import { CS_CONFIG } from '@ckeditor/ckeditor5-cloud-services/tests/_utils/cloud
 ClassicEditor
 	.create( document.querySelector( '#snippet-image-insert-via-pasting-url-into-editor' ), {
 		removePlugins: [ 'ImageToolbar', 'ImageCaption', 'ImageStyle', 'ImageResize', 'LinkImage' ],
-		cloudServices: CS_CONFIG,
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
-		}
+		cloudServices: CS_CONFIG
 	} )
 	.then( editor => {
 		window.editorInsertImageViaPastingUrlIntoEditor = editor;

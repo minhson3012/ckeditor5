@@ -18,7 +18,7 @@ msgstr ""
 
 msgctxt "Toolbar button tooltip for the HTML embed feature."
 msgid "Insert HTML"
-msgstr "HTML invoegen"
+msgstr ""
 
 msgctxt "The HTML snippet."
 msgid "HTML snippet"
@@ -30,11 +30,11 @@ msgstr ""
 
 msgctxt "A label of a button that switches the HTML embed to the source editing mode."
 msgid "Edit source"
-msgstr "Bron bewerken"
+msgstr ""
 
 msgctxt "A label of a button that saves the HTML embed content and navigates back to the preview."
 msgid "Save changes"
-msgstr "Aanpassingen bewaren"
+msgstr ""
 
 msgctxt "An information displayed in the HTML embed preview if the content is not previewable."
 msgid "No preview available"

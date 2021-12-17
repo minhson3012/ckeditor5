@@ -11,10 +11,8 @@ ClassicEditor
 	.create( document.querySelector( '#snippet-ui-language-rtl' ), {
 		language: 'ar',
 		cloudServices: CS_CONFIG,
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+		toolbar: {
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		}
 	} )
 	.then( editor => {

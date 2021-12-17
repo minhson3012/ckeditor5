@@ -49,14 +49,19 @@ export function createImageViewElement( writer, imageType ) {
  */
 export function getImgViewElementMatcher( editor, matchImageType ) {
 	if ( editor.plugins.has( 'ImageInlineEditing' ) !== editor.plugins.has( 'ImageBlockEditing' ) ) {
-		return { name: 'img' };
+		return {
+			name: 'img',
+			attributes: {
+				src: true
+			}
+		};
 	}
 
 	const imageUtils = editor.plugins.get( 'ImageUtils' );
 
 	return element => {
-		// Check if view element is an `img`.
-		if ( !imageUtils.isInlineImageView( element ) ) {
+		// Convert only images with src attribute.
+		if ( !imageUtils.isInlineImageView( element ) || !element.hasAttribute( 'src' ) ) {
 			return null;
 		}
 
@@ -68,7 +73,7 @@ export function getImgViewElementMatcher( editor, matchImageType ) {
 			return null;
 		}
 
-		return { name: true };
+		return { name: true, attributes: [ 'src' ] };
 	};
 }
 

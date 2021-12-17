@@ -7,6 +7,7 @@ import ModelTestEditor from '@ckeditor/ckeditor5-core/tests/_utils/modeltestedit
 import HorizontalLineEditing from '@ckeditor/ckeditor5-horizontal-line/src/horizontallineediting';
 import Paragraph from '@ckeditor/ckeditor5-paragraph/src/paragraph';
 import { getData, setData } from '@ckeditor/ckeditor5-engine/src/dev-utils/model';
+import { assertEqualMarkup } from '@ckeditor/ckeditor5-utils/tests/_utils/utils';
 
 import TableEditing from '../../src/tableediting';
 import TableSelection from '../../src/tableselection';
@@ -58,7 +59,7 @@ describe( 'InsertRowCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00[]', '01' ],
 					[ '', '' ],
 					[ '10', '11' ]
@@ -74,7 +75,7 @@ describe( 'InsertRowCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00' ],
 					[ '<paragraph>[]10</paragraph>' ],
 					[ '' ],
@@ -91,7 +92,7 @@ describe( 'InsertRowCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00[]', '01' ],
 					[ '', '' ],
 					[ '10', '11' ],
@@ -108,7 +109,7 @@ describe( 'InsertRowCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00', '01' ],
 					[ '10[]', '11' ],
 					[ '', '' ],
@@ -143,7 +144,7 @@ describe( 'InsertRowCommand', () => {
 				// |         | 22 | 23 |
 				// +----+----+----+----+
 				//                     ^-- heading columns
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ { contents: '00', colspan: 2 }, '02', '03' ],
 					[ { contents: '10[]', colspan: 2, rowspan: 3 }, '12', '13' ],
 					[ '', '' ],
@@ -176,7 +177,7 @@ describe( 'InsertRowCommand', () => {
 				// +----+----+----+
 				// | 20 | 21 | 22 |
 				// +----+----+----+
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ { contents: '00', rowspan: 2 }, '01', '02' ],
 					[ '11[]', '12' ],
 					[ '', '', '' ],
@@ -209,7 +210,7 @@ describe( 'InsertRowCommand', () => {
 				// +----+----+----+
 				// | 20           |
 				// +----+----+----+
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ { contents: '00', rowspan: 2 }, '01', '02' ],
 					[ '11[]', '12' ],
 					[ '', '', '' ],
@@ -225,7 +226,7 @@ describe( 'InsertRowCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00', '01' ],
 					[ '10[]', '11' ],
 					[ '', '' ]
@@ -249,7 +250,7 @@ describe( 'InsertRowCommand', () => {
 
 				command.execute();
 
-				expect( getData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model, { withoutSelection: true } ), modelTable( [
 					[ '11', '12' ],
 					[ '21', '22' ],
 					[ '', '' ],
@@ -273,7 +274,7 @@ describe( 'InsertRowCommand', () => {
 
 				command.execute();
 
-				expect( getData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model, { withoutSelection: true } ), modelTable( [
 					[ '11', '12' ],
 					[ '21', '22' ],
 					[ '31', '<horizontalLine></horizontalLine>' ],
@@ -301,7 +302,7 @@ describe( 'InsertRowCommand', () => {
 				// +----+----+----+
 				// | 10 | 11 | 12 |
 				// +----+----+----+
-				expect( getData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model, { withoutSelection: true } ), modelTable( [
 					[ '00', { contents: '01', colspan: 2 } ],
 					[ '', { contents: '', colspan: 2 } ],
 					[ '10', '11', '12' ]
@@ -358,7 +359,7 @@ describe( 'InsertRowCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00' ],
 					[ '' ],
 					[ '<paragraph>[]10</paragraph>' ],
@@ -374,7 +375,7 @@ describe( 'InsertRowCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '', '' ],
 					[ '00[]', '01' ],
 					[ '10', '11' ]
@@ -390,7 +391,7 @@ describe( 'InsertRowCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00', '01' ],
 					[ '10', '11' ],
 					[ '', '' ],
@@ -407,7 +408,7 @@ describe( 'InsertRowCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '', '' ],
 					[ '00[]', '01' ],
 					[ '10', '11' ],
@@ -424,7 +425,7 @@ describe( 'InsertRowCommand', () => {
 
 				command.execute();
 
-				expect( getData( model ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model ), modelTable( [
 					[ '00', '01' ],
 					[ '10', '11' ],
 					[ '', '' ],
@@ -449,7 +450,7 @@ describe( 'InsertRowCommand', () => {
 
 				command.execute();
 
-				expect( getData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model, { withoutSelection: true } ), modelTable( [
 					[ '', '' ],
 					[ '11', '12' ],
 					[ '21', '22' ],
@@ -484,7 +485,7 @@ describe( 'InsertRowCommand', () => {
 				// +----+----+----+
 				// | 10 | 11 | 12 |
 				// +----+----+----+
-				expect( getData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+				assertEqualMarkup( getData( model, { withoutSelection: true } ), modelTable( [
 					[ '', { contents: '', colspan: 2 } ],
 					[ '00', { contents: '01', colspan: 2 } ],
 					[ '10', '11', '12' ]

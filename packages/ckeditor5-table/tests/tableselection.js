@@ -18,6 +18,7 @@ import TableSelection from '../src/tableselection';
 import { assertSelectedCells, modelTable } from './_utils/utils';
 import DocumentFragment from '@ckeditor/ckeditor5-engine/src/model/documentfragment';
 import Typing from '@ckeditor/ckeditor5-typing/src/typing';
+import { assertEqualMarkup } from '@ckeditor/ckeditor5-utils/tests/_utils/utils';
 
 describe( 'TableSelection', () => {
 	let editorElement, editor, model, tableSelection, modelRoot;
@@ -352,7 +353,7 @@ describe( 'TableSelection', () => {
 
 			editor.execute( 'delete' );
 
-			expect( getModelData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model ), modelTable( [
 				[ '', '', '13' ],
 				[ '', '[]', '23' ],
 				[ '31', '32', '33' ]
@@ -367,7 +368,7 @@ describe( 'TableSelection', () => {
 
 			editor.execute( 'delete' );
 
-			expect( getModelData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model ), modelTable( [
 				[ '', '', '13' ],
 				[ '', '[]', '23' ],
 				[ '31', '32', '33' ]
@@ -382,7 +383,7 @@ describe( 'TableSelection', () => {
 
 			editor.execute( 'deleteForward' );
 
-			expect( getModelData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model ), modelTable( [
 				[ '[]', '12', '13' ],
 				[ '21', '22', '23' ],
 				[ '31', '32', '33' ]
@@ -399,7 +400,7 @@ describe( 'TableSelection', () => {
 				model.deleteContent( model.document.selection );
 			} );
 
-			expect( getModelData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model ), modelTable( [
 				[ '', '', '13' ],
 				[ '', '[]', '23' ],
 				[ '31', '32', '33' ]
@@ -423,7 +424,7 @@ describe( 'TableSelection', () => {
 				writer.setSelection( selection );
 			} );
 
-			expect( getModelData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model ), modelTable( [
 				[ '', '[]', '13' ],
 				[ '21', '22', '23' ],
 				[ '31', '32', '33' ]
@@ -449,7 +450,7 @@ describe( 'TableSelection', () => {
 				writer.setSelection( selection );
 			} );
 
-			expect( getModelData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model ), modelTable( [
 				[ '[]', '', '13' ],
 				[ '21', '22', '23' ],
 				[ '31', '32', '33' ]

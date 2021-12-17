@@ -19,6 +19,7 @@ import TableClipboard from '../src/tableclipboard';
 import { getData as getModelData, setData as setModelData } from '@ckeditor/ckeditor5-engine/src/dev-utils/model';
 
 import { assertSelectedCells, modelTable } from './_utils/utils';
+import { assertEqualMarkup } from '@ckeditor/ckeditor5-utils/tests/_utils/utils';
 import DomEventData from '@ckeditor/ckeditor5-engine/src/view/observer/domeventdata';
 import { getCode } from '@ckeditor/ckeditor5-utils/src/keyboard';
 import Input from '@ckeditor/ckeditor5-typing/src/input';
@@ -53,7 +54,7 @@ describe( 'TableSelection - integration', () => {
 			} );
 			viewDocument.fire( 'delete', domEventData );
 
-			expect( getModelData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model ), modelTable( [
 				[ '', '', '13' ],
 				[ '', '[]', '23' ],
 				[ '31', '32', '33' ]
@@ -75,7 +76,7 @@ describe( 'TableSelection - integration', () => {
 			} );
 			viewDocument.fire( 'delete', domEventData );
 
-			expect( getModelData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model ), modelTable( [
 				[ '[]', '', '13' ],
 				[ '', '', '23' ],
 				[ '31', '32', '33' ]
@@ -98,7 +99,7 @@ describe( 'TableSelection - integration', () => {
 			} );
 			viewDocument.fire( 'delete', domEventData );
 
-			expect( getModelData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model ), modelTable( [
 				[ '1[]', '12', '13' ],
 				[ '21', '22', '23' ],
 				[ '31', '32', '33' ]
@@ -132,7 +133,7 @@ describe( 'TableSelection - integration', () => {
 				}
 			] );
 
-			expect( getModelData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model ), modelTable( [
 				[ '', '', '13' ],
 				[ '', 'x[]', '23' ],
 				[ '31', '32', '33' ]
@@ -155,7 +156,7 @@ describe( 'TableSelection - integration', () => {
 				}
 			] );
 
-			expect( getModelData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model ), modelTable( [
 				[ 'x[]11', '12', '13' ],
 				[ '21', '22', '23' ],
 				[ '31', '32', '33' ]
@@ -183,7 +184,7 @@ describe( 'TableSelection - integration', () => {
 				stop: sinon.spy()
 			} );
 
-			expect( getModelData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model ), modelTable( [
 				[ 'foo[]', '', '13' ],
 				[ '', '', '23' ],
 				[ '31', '32', '33' ]
@@ -198,8 +199,8 @@ describe( 'TableSelection - integration', () => {
 
 			editor.execute( 'horizontalLine' );
 
-			expect(
-				getModelData( model ) ).to.equalMarkup(
+			assertEqualMarkup(
+				getModelData( model ),
 				'<table>' +
 					'<tableRow>' +
 						'<tableCell><horizontalLine></horizontalLine><paragraph>[]</paragraph></tableCell>' +
@@ -237,8 +238,8 @@ describe( 'TableSelection - integration', () => {
 				writer.remove( modelRoot.getNodeByPath( [ 0, 1 ] ) );
 			} );
 
-			expect(
-				getModelData( model ) ).to.equalMarkup(
+			assertEqualMarkup(
+				getModelData( model ),
 				'<table>' +
 					'<tableRow>' +
 						'<tableCell><paragraph>11</paragraph></tableCell>' +
@@ -273,14 +274,14 @@ describe( 'TableSelection - integration', () => {
 
 			editor.execute( 'mergeTableCells' );
 
-			expect( getModelData( model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model ), modelTable( [
 				[ { colspan: 2, contents: '<paragraph>[00</paragraph><paragraph>01]</paragraph>' } ],
 				[ '10', '11' ]
 			] ) );
 
 			editor.execute( 'undo' );
 
-			expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( model, { withoutSelection: true } ), modelTable( [
 				[ '00', '01' ],
 				[ '10', '11' ]
 			] ) );

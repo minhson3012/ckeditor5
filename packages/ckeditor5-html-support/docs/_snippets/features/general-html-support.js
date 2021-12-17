@@ -37,12 +37,8 @@ ClassicEditor
 				'redo',
 				'|',
 				'sourceEditing'
-			]
-		},
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+			],
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		},
 		image: {
 			toolbar: [

@@ -15,12 +15,8 @@ ClassicEditor
 	.create( document.querySelector( '#snippet-image-insert-via-url' ), {
 		removePlugins: [ 'ImageToolbar', 'ImageCaption', 'ImageStyle', 'ImageResize', 'LinkImage', 'AutoImage' ],
 		toolbar: {
-			items: toolbarItems
-		},
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+			items: toolbarItems,
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		},
 		cloudServices: CS_CONFIG
 	} )

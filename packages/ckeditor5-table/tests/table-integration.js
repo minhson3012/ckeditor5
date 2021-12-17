@@ -20,6 +20,7 @@ import { parse as parseView } from '@ckeditor/ckeditor5-engine/src/dev-utils/vie
 
 import TableEditing from '../src/tableediting';
 import { modelTable, viewTable } from './_utils/utils';
+import { assertEqualMarkup } from '@ckeditor/ckeditor5-utils/tests/_utils/utils';
 
 describe( 'Table feature – integration', () => {
 	describe( 'with clipboard', () => {
@@ -45,7 +46,7 @@ describe( 'Table feature – integration', () => {
 				content: parseView( '<td>bar</td>' )
 			} );
 
-			expect( getModelData( editor.model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( editor.model ), modelTable( [
 				[ 'foobar[]' ]
 			] ) );
 		} );
@@ -57,7 +58,7 @@ describe( 'Table feature – integration', () => {
 				content: parseView( '<td>bar</td>' )
 			} );
 
-			expect( getModelData( editor.model ) ).to.equalMarkup( '<paragraph>foobar[]</paragraph>' );
+			assertEqualMarkup( getModelData( editor.model ), '<paragraph>foobar[]</paragraph>' );
 		} );
 
 		it( 'pastes list into the td', () => {
@@ -67,7 +68,7 @@ describe( 'Table feature – integration', () => {
 				content: parseView( '<li>bar</li>' )
 			} );
 
-			expect( getModelData( editor.model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( editor.model ), modelTable( [
 				[ '<listItem listIndent="0" listType="bulleted">bar[]</listItem>' ]
 			] ) );
 		} );
@@ -79,7 +80,7 @@ describe( 'Table feature – integration', () => {
 				content: parseView( '<blockquote>bar</blockquote>' )
 			} );
 
-			expect( getModelData( editor.model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( editor.model ), modelTable( [
 				[ '<blockQuote><paragraph>bar[]</paragraph></blockQuote>' ]
 			] ) );
 		} );
@@ -180,7 +181,7 @@ describe( 'Table feature – integration', () => {
 
 			editor.execute( 'delete' );
 
-			expect( getModelData( editor.model ) ).to.equalMarkup( modelTable( [
+			assertEqualMarkup( getModelData( editor.model ), modelTable( [
 				[ '<blockQuote><paragraph>Foo[]Bar</paragraph></blockQuote>' ]
 			] ) );
 		} );

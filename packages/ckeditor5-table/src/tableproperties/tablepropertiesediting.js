@@ -34,10 +34,10 @@ const FLOAT_VALUES_REG_EXP = /^(left|none|right)$/;
  *
  * Introduces table's model attributes and their conversion:
  *
- * - border: `tableBorderStyle`, `tableBorderColor` and `tableBorderWidth`
- * - background color: `tableBackgroundColor`
- * - horizontal alignment: `tableAlignment`
- * - width & height: `tableWidth` & `tableHeight`
+ * - border: `borderStyle`, `borderColor` and `borderWidth`
+ * - background color: `backgroundColor`
+ * - horizontal alignment: `alignment`
+ * - width & height: `width` & `height`
  *
  * It also registers commands used to manipulate the above attributes:
  *
@@ -91,14 +91,14 @@ export default class TablePropertiesEditing extends Plugin {
 		editor.commands.add( 'tableAlignment', new TableAlignmentCommand( editor, defaultTableProperties.alignment ) );
 
 		enableTableToFigureProperty( schema, conversion, {
-			modelAttribute: 'tableWidth',
+			modelAttribute: 'width',
 			styleName: 'width',
 			defaultValue: defaultTableProperties.width
 		} );
 		editor.commands.add( 'tableWidth', new TableWidthCommand( editor, defaultTableProperties.width ) );
 
 		enableTableToFigureProperty( schema, conversion, {
-			modelAttribute: 'tableHeight',
+			modelAttribute: 'height',
 			styleName: 'height',
 			defaultValue: defaultTableProperties.height
 		} );
@@ -106,7 +106,7 @@ export default class TablePropertiesEditing extends Plugin {
 
 		editor.data.addStyleProcessorRules( addBackgroundRules );
 		enableProperty( schema, conversion, {
-			modelAttribute: 'tableBackgroundColor',
+			modelAttribute: 'backgroundColor',
 			styleName: 'background-color',
 			defaultValue: defaultTableProperties.backgroundColor
 		} );
@@ -117,30 +117,22 @@ export default class TablePropertiesEditing extends Plugin {
 	}
 }
 
-// Enables `tableBorderStyle'`, `tableBorderColor'` and `tableBorderWidth'` attributes for table.
+// Enables `'borderStyle'`, `'borderColor'` and `'borderWidth'` attributes for table.
 //
 // @param {module:engine/model/schema~Schema} schema
 // @param {module:engine/conversion/conversion~Conversion} conversion
 // @param {Object} defaultBorder The default border values.
-// @param {String} defaultBorder.color The default `tableBorderColor` value.
-// @param {String} defaultBorder.style The default `tableBorderStyle` value.
-// @param {String} defaultBorder.width The default `tableBorderWidth` value.
+// @param {String} defaultBorder.color The default `borderColor` value.
+// @param {String} defaultBorder.style The default `borderStyle` value.
+// @param {String} defaultBorder.width The default `borderWidth` value.
 function enableBorderProperties( schema, conversion, defaultBorder ) {
-	const modelAttributes = {
-		width: 'tableBorderWidth',
-		color: 'tableBorderColor',
-		style: 'tableBorderStyle'
-	};
-
 	schema.extend( 'table', {
-		allowAttributes: Object.values( modelAttributes )
+		allowAttributes: [ 'borderWidth', 'borderColor', 'borderStyle' ]
 	} );
-
-	upcastBorderStyles( conversion, 'table', modelAttributes, defaultBorder );
-
-	downcastTableAttribute( conversion, { modelAttribute: modelAttributes.color, styleName: 'border-color' } );
-	downcastTableAttribute( conversion, { modelAttribute: modelAttributes.style, styleName: 'border-style' } );
-	downcastTableAttribute( conversion, { modelAttribute: modelAttributes.width, styleName: 'border-width' } );
+	upcastBorderStyles( conversion, 'table', defaultBorder );
+	downcastTableAttribute( conversion, { modelAttribute: 'borderColor', styleName: 'border-color' } );
+	downcastTableAttribute( conversion, { modelAttribute: 'borderStyle', styleName: 'border-style' } );
+	downcastTableAttribute( conversion, { modelAttribute: 'borderWidth', styleName: 'border-width' } );
 }
 
 // Enables the `'alignment'` attribute for table.
@@ -150,14 +142,14 @@ function enableBorderProperties( schema, conversion, defaultBorder ) {
 // @param {String} defaultValue The default alignment value.
 function enableAlignmentProperty( schema, conversion, defaultValue ) {
 	schema.extend( 'table', {
-		allowAttributes: [ 'tableAlignment' ]
+		allowAttributes: [ 'alignment' ]
 	} );
 
 	conversion.for( 'downcast' )
 		.attributeToAttribute( {
 			model: {
 				name: 'table',
-				key: 'tableAlignment'
+				key: 'alignment'
 			},
 			view: alignment => ( {
 				key: 'style',
@@ -179,7 +171,7 @@ function enableAlignmentProperty( schema, conversion, defaultValue ) {
 				}
 			},
 			model: {
-				key: 'tableAlignment',
+				key: 'alignment',
 				value: viewElement => {
 					let align = viewElement.getStyle( 'float' );
 
@@ -201,7 +193,7 @@ function enableAlignmentProperty( schema, conversion, defaultValue ) {
 			},
 			model: {
 				name: 'table',
-				key: 'tableAlignment',
+				key: 'alignment',
 				value: viewElement => {
 					const align = viewElement.getAttribute( 'align' );
 

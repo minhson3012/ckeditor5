@@ -19,12 +19,8 @@ ClassicEditor
 				'outdent', 'indent', '|',
 				'uploadImage', 'blockQuote', '|',
 				'undo', 'redo'
-			]
-		},
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+			],
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		},
 		image: {
 			toolbar: [ 'imageStyle:inline', 'imageStyle:block', 'imageStyle:side', '|', 'toggleImageCaption', 'imageTextAlternative' ]

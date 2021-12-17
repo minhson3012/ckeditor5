@@ -10,12 +10,8 @@ ClassicEditor
 		toolbar: {
 			items: [
 				'heading', '|', 'bold', 'italic', '|', 'undo', 'redo', '|', 'uploadImage'
-			]
-		},
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+			],
+			viewportTopOffset: 100
 		},
 		ckfinder: {
 			// eslint-disable-next-line max-len

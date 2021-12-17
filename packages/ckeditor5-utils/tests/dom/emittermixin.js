@@ -112,19 +112,6 @@ describe( 'DomEmitterMixin', () => {
 
 				sinon.assert.calledOnce( spy );
 			} );
-
-			it( 'should optionally use capturing if already listening', () => {
-				const spy1 = testUtils.sinon.spy();
-				const spy2 = testUtils.sinon.spy();
-
-				domEmitter.listenTo( document, 'test', spy1 );
-				domEmitter.listenTo( document, 'test', spy2, { useCapture: true } );
-
-				node.dispatchEvent( new Event( 'test', { bubbles: false } ) );
-
-				sinon.assert.notCalled( spy1 );
-				sinon.assert.calledOnce( spy2 );
-			} );
 		} );
 
 		describe( 'event passive handling', () => {
@@ -150,20 +137,6 @@ describe( 'DomEmitterMixin', () => {
 				domEmitter.listenTo( node, 'test', () => {}, { useCapture: true } );
 
 				expect( spy.calledWith( 'test', sinon.match.func, sinon.match( { capture: true, passive: false } ) ) ).to.be.true;
-			} );
-
-			it( 'should optionally use passive mode if already listening', () => {
-				const spy = sinon.spy( node, 'addEventListener' );
-
-				domEmitter.listenTo( node, 'test', () => {} );
-				domEmitter.listenTo( node, 'test', () => {}, { usePassive: true } );
-				domEmitter.listenTo( node, 'test', () => {}, { useCapture: true } );
-				domEmitter.listenTo( node, 'test', () => {}, { useCapture: true, usePassive: true } );
-
-				expect( spy.calledWith( 'test', sinon.match.func, sinon.match( { capture: false, passive: false } ) ) ).to.be.true;
-				expect( spy.calledWith( 'test', sinon.match.func, sinon.match( { capture: false, passive: true } ) ) ).to.be.true;
-				expect( spy.calledWith( 'test', sinon.match.func, sinon.match( { capture: true, passive: false } ) ) ).to.be.true;
-				expect( spy.calledWith( 'test', sinon.match.func, sinon.match( { capture: true, passive: true } ) ) ).to.be.true;
 			} );
 		} );
 	} );
@@ -436,149 +409,95 @@ describe( 'DomEmitterMixin', () => {
 		it( 'should detach native DOM event listener proxy, specific event', () => {
 			const spy1a = testUtils.sinon.spy();
 			const spy1b = testUtils.sinon.spy();
-			const spy1c = testUtils.sinon.spy();
-			const spy2a = testUtils.sinon.spy();
-			const spy2b = testUtils.sinon.spy();
-			const spy2c = testUtils.sinon.spy();
 
 			domEmitter.listenTo( node, 'test', spy1a );
-			domEmitter.listenTo( node, 'test', spy1b, { useCapture: true } );
-			domEmitter.listenTo( node, 'test', spy1c, { usePassive: true } );
 
-			const proxyEmitterA = domEmitter._getProxyEmitter( node, { capture: false, passive: false } );
-			const proxyEmitterB = domEmitter._getProxyEmitter( node, { capture: true, passive: false } );
-			const proxyEmitterC = domEmitter._getProxyEmitter( node, { capture: false, passive: true } );
-			const spyFireA = testUtils.sinon.spy( proxyEmitterA, 'fire' );
-			const spyFireB = testUtils.sinon.spy( proxyEmitterB, 'fire' );
-			const spyFireC = testUtils.sinon.spy( proxyEmitterC, 'fire' );
+			const proxyEmitter = domEmitter._getProxyEmitter( node );
+			const spy2 = testUtils.sinon.spy( proxyEmitter, 'fire' );
 
 			node.dispatchEvent( new Event( 'test' ) );
 
 			sinon.assert.calledOnce( spy1a );
-			sinon.assert.calledOnce( spy1b );
-			sinon.assert.calledOnce( spy1c );
-			sinon.assert.calledOnce( spyFireA );
-			sinon.assert.calledOnce( spyFireB );
-			sinon.assert.calledOnce( spyFireC );
+			sinon.assert.calledOnce( spy2 );
 
 			domEmitter.stopListening( node, 'test' );
 			node.dispatchEvent( new Event( 'test' ) );
 
 			sinon.assert.calledOnce( spy1a );
-			sinon.assert.calledOnce( spyFireA );
+			sinon.assert.calledOnce( spy2 );
 
 			// Attach same event again.
-			domEmitter.listenTo( node, 'test', spy2a );
-			domEmitter.listenTo( node, 'test', spy2b, { useCapture: true } );
-			domEmitter.listenTo( node, 'test', spy2c, { usePassive: true } );
-
+			domEmitter.listenTo( node, 'test', spy1b );
 			node.dispatchEvent( new Event( 'test' ) );
 
-			expect( proxyEmitterA ).to.equal( domEmitter._getProxyEmitter( node, { capture: false, passive: false } ) );
-			expect( proxyEmitterB ).to.equal( domEmitter._getProxyEmitter( node, { capture: true, passive: false } ) );
-			expect( proxyEmitterC ).to.equal( domEmitter._getProxyEmitter( node, { capture: false, passive: true } ) );
+			expect( proxyEmitter ).to.equal( domEmitter._getProxyEmitter( node ) );
 
 			sinon.assert.calledOnce( spy1a );
 			sinon.assert.calledOnce( spy1b );
-			sinon.assert.calledOnce( spy1c );
-			sinon.assert.calledOnce( spy2a );
-			sinon.assert.calledOnce( spy2b );
-			sinon.assert.calledOnce( spy2c );
-			sinon.assert.calledTwice( spyFireA );
-			sinon.assert.calledTwice( spyFireB );
-			sinon.assert.calledTwice( spyFireC );
+			sinon.assert.calledTwice( spy2 );
 		} );
 
 		it( 'should detach native DOM event listener proxy, specific callback', () => {
 			const spy1a = testUtils.sinon.spy();
 			const spy1b = testUtils.sinon.spy();
 			const spy1c = testUtils.sinon.spy();
-			const spy2 = testUtils.sinon.spy();
 
 			domEmitter.listenTo( node, 'test', spy1a );
 			domEmitter.listenTo( node, 'test', spy1b );
-			domEmitter.listenTo( node, 'test', spy1c, { useCapture: true } );
 
-			const proxyEmitterA = domEmitter._getProxyEmitter( node, { capture: false } );
-			const proxyEmitterB = domEmitter._getProxyEmitter( node, { capture: true } );
-			const spyFireA = testUtils.sinon.spy( proxyEmitterA, 'fire' );
-			const spyFireB = testUtils.sinon.spy( proxyEmitterB, 'fire' );
+			const proxyEmitter = domEmitter._getProxyEmitter( node );
+			const spy2 = testUtils.sinon.spy( proxyEmitter, 'fire' );
 
 			node.dispatchEvent( new Event( 'test' ) );
 
 			sinon.assert.calledOnce( spy1a );
 			sinon.assert.calledOnce( spy1b );
-			sinon.assert.calledOnce( spy1c );
-			sinon.assert.calledOnce( spyFireA );
-			sinon.assert.calledOnce( spyFireB );
+			sinon.assert.calledOnce( spy2 );
 
 			domEmitter.stopListening( node, 'test', spy1a );
 			node.dispatchEvent( new Event( 'test' ) );
 
 			sinon.assert.calledOnce( spy1a );
 			sinon.assert.calledTwice( spy1b );
-			sinon.assert.calledTwice( spy1c );
-			sinon.assert.calledTwice( spyFireA );
-			sinon.assert.calledTwice( spyFireB );
+			sinon.assert.calledTwice( spy2 );
 
 			domEmitter.stopListening( node, 'test', spy1b );
 			node.dispatchEvent( new Event( 'test' ) );
 
 			sinon.assert.calledOnce( spy1a );
 			sinon.assert.calledTwice( spy1b );
-			sinon.assert.calledThrice( spy1c );
-			sinon.assert.calledTwice( spyFireA );
-			sinon.assert.calledThrice( spyFireB );
-
-			domEmitter.stopListening( node, 'test', spy1c );
-			node.dispatchEvent( new Event( 'test' ) );
-
-			sinon.assert.calledOnce( spy1a );
-			sinon.assert.calledTwice( spy1b );
-			sinon.assert.calledThrice( spy1c );
-			sinon.assert.calledTwice( spyFireA );
-			sinon.assert.calledThrice( spyFireB );
+			sinon.assert.calledTwice( spy2 );
 
 			// Attach same event again.
-			domEmitter.listenTo( node, 'test', spy2 );
+			domEmitter.listenTo( node, 'test', spy1c );
 			node.dispatchEvent( new Event( 'test' ) );
 
-			expect( proxyEmitterA ).to.equal( domEmitter._getProxyEmitter( node, { capture: false } ) );
-			expect( proxyEmitterB ).to.equal( domEmitter._getProxyEmitter( node, { capture: true } ) );
+			expect( proxyEmitter ).to.equal( domEmitter._getProxyEmitter( node ) );
 
 			sinon.assert.calledOnce( spy1a );
 			sinon.assert.calledTwice( spy1b );
-			sinon.assert.calledThrice( spy1c );
-			sinon.assert.calledOnce( spy2 );
-			sinon.assert.calledThrice( spyFireA );
-			sinon.assert.calledThrice( spyFireB );
+			sinon.assert.calledOnce( spy1c );
+			sinon.assert.calledThrice( spy2 );
 		} );
 
 		it( 'should detach native DOM event listener proxy, specific emitter', () => {
 			const spy1a = testUtils.sinon.spy();
 			const spy1b = testUtils.sinon.spy();
 			const spy1c = testUtils.sinon.spy();
-			const spy2a = testUtils.sinon.spy();
-			const spy2b = testUtils.sinon.spy();
-			const spy2c = testUtils.sinon.spy();
+			const spy1d = testUtils.sinon.spy();
 
 			domEmitter.listenTo( node, 'test1', spy1a );
 			domEmitter.listenTo( node, 'test2', spy1b );
-			domEmitter.listenTo( node, 'test2', spy1c, { usePassive: true } );
 
-			const proxyEmitterA = domEmitter._getProxyEmitter( node, { passive: false } );
-			const proxyEmitterB = domEmitter._getProxyEmitter( node, { passive: true } );
-			const spyFireA = testUtils.sinon.spy( proxyEmitterA, 'fire' );
-			const spyFireB = testUtils.sinon.spy( proxyEmitterB, 'fire' );
+			const proxyEmitter = domEmitter._getProxyEmitter( node );
+			const spy2 = testUtils.sinon.spy( proxyEmitter, 'fire' );
 
 			node.dispatchEvent( new Event( 'test1' ) );
 			node.dispatchEvent( new Event( 'test2' ) );
 
 			sinon.assert.calledOnce( spy1a );
 			sinon.assert.calledOnce( spy1b );
-			sinon.assert.calledOnce( spy1c );
-			sinon.assert.calledTwice( spyFireA );
-			sinon.assert.calledOnce( spyFireB );
+			sinon.assert.calledTwice( spy2 );
 
 			domEmitter.stopListening( node );
 
@@ -587,58 +506,43 @@ describe( 'DomEmitterMixin', () => {
 
 			sinon.assert.calledOnce( spy1a );
 			sinon.assert.calledOnce( spy1b );
-			sinon.assert.calledOnce( spy1c );
-			sinon.assert.calledTwice( spyFireA );
-			sinon.assert.calledOnce( spyFireB );
+			sinon.assert.calledTwice( spy2 );
 
 			// Attach same event again.
-			domEmitter.listenTo( node, 'test1', spy2a );
-			domEmitter.listenTo( node, 'test2', spy2b );
-			domEmitter.listenTo( node, 'test2', spy2c, { usePassive: true } );
+			domEmitter.listenTo( node, 'test1', spy1c );
+			domEmitter.listenTo( node, 'test2', spy1d );
 
 			// Old proxy emitter died when stopped listening to the node.
-			const proxyEmitter2a = domEmitter._getProxyEmitter( node, { passive: false } );
-			const proxyEmitter2b = domEmitter._getProxyEmitter( node, { passive: true } );
-			const spyFire2a = testUtils.sinon.spy( proxyEmitter2a, 'fire' );
-			const spyFire2b = testUtils.sinon.spy( proxyEmitter2b, 'fire' );
+			const proxyEmitter2 = domEmitter._getProxyEmitter( node );
+			const spy3 = testUtils.sinon.spy( proxyEmitter2, 'fire' );
 
 			node.dispatchEvent( new Event( 'test1' ) );
 			node.dispatchEvent( new Event( 'test2' ) );
 
-			expect( proxyEmitterA ).to.not.be.equal( proxyEmitter2a );
-			expect( proxyEmitterB ).to.not.be.equal( proxyEmitter2b );
+			expect( proxyEmitter ).to.not.be.equal( proxyEmitter2 );
 
 			sinon.assert.calledOnce( spy1a );
 			sinon.assert.calledOnce( spy1b );
 			sinon.assert.calledOnce( spy1c );
-			sinon.assert.calledTwice( spyFireA );
-			sinon.assert.calledOnce( spyFireB );
-			sinon.assert.calledOnce( spy2a );
-			sinon.assert.calledOnce( spy2b );
-			sinon.assert.calledOnce( spy2c );
-			sinon.assert.calledTwice( spyFire2a );
-			sinon.assert.calledOnce( spyFire2b );
+			sinon.assert.calledOnce( spy1d );
+			sinon.assert.calledTwice( spy2 );
+			sinon.assert.calledTwice( spy3 );
 		} );
 
 		it( 'should detach native DOM event listener proxy, everything', () => {
 			const spy1a = testUtils.sinon.spy();
 			const spy1b = testUtils.sinon.spy();
 			const spy1c = testUtils.sinon.spy();
-			const spy2a = testUtils.sinon.spy();
-			const spy2b = testUtils.sinon.spy();
-			const spy2c = testUtils.sinon.spy();
+			const spy1d = testUtils.sinon.spy();
 			const spyEl2 = testUtils.sinon.spy();
 			const node2 = document.createElement( 'div' );
 
 			domEmitter.listenTo( node, 'test1', spy1a );
 			domEmitter.listenTo( node, 'test2', spy1b );
-			domEmitter.listenTo( node, 'test1', spy1c, { useCapture: true } );
 			domEmitter.listenTo( node2, 'test1', spyEl2 );
 
-			const proxyEmitterA = domEmitter._getProxyEmitter( node, { capture: false } );
-			const proxyEmitterB = domEmitter._getProxyEmitter( node, { capture: true } );
-			const spyFireA = testUtils.sinon.spy( proxyEmitterA, 'fire' );
-			const spyFireB = testUtils.sinon.spy( proxyEmitterB, 'fire' );
+			const proxyEmitter = domEmitter._getProxyEmitter( node );
+			const spy2 = testUtils.sinon.spy( proxyEmitter, 'fire' );
 
 			node.dispatchEvent( new Event( 'test1' ) );
 			node.dispatchEvent( new Event( 'test2' ) );
@@ -646,9 +550,7 @@ describe( 'DomEmitterMixin', () => {
 
 			sinon.assert.calledOnce( spy1a );
 			sinon.assert.calledOnce( spy1b );
-			sinon.assert.calledOnce( spy1c );
-			sinon.assert.calledTwice( spyFireA );
-			sinon.assert.calledOnce( spyFireB );
+			sinon.assert.calledTwice( spy2 );
 			sinon.assert.calledOnce( spyEl2 );
 
 			domEmitter.stopListening();
@@ -659,39 +561,29 @@ describe( 'DomEmitterMixin', () => {
 
 			sinon.assert.calledOnce( spy1a );
 			sinon.assert.calledOnce( spy1b );
-			sinon.assert.calledOnce( spy1c );
-			sinon.assert.calledTwice( spyFireA );
-			sinon.assert.calledOnce( spyFireB );
+			sinon.assert.calledTwice( spy2 );
 			sinon.assert.calledOnce( spyEl2 );
 
 			// Attach same event again.
-			domEmitter.listenTo( node, 'test1', spy2a );
-			domEmitter.listenTo( node, 'test2', spy2b );
-			domEmitter.listenTo( node, 'test2', spy2c, { useCapture: true } );
+			domEmitter.listenTo( node, 'test1', spy1c );
+			domEmitter.listenTo( node, 'test2', spy1d );
 
 			// Old proxy emitter died when stopped listening to the node.
-			const proxyEmitter2a = domEmitter._getProxyEmitter( node, { capture: false } );
-			const proxyEmitter2b = domEmitter._getProxyEmitter( node, { capture: true } );
-			const spyFire2a = testUtils.sinon.spy( proxyEmitter2a, 'fire' );
-			const spyFire2b = testUtils.sinon.spy( proxyEmitter2b, 'fire' );
+			const proxyEmitter2 = domEmitter._getProxyEmitter( node );
+			const spy3 = testUtils.sinon.spy( proxyEmitter2, 'fire' );
 
 			node.dispatchEvent( new Event( 'test1' ) );
 			node.dispatchEvent( new Event( 'test2' ) );
 
-			expect( proxyEmitterA ).to.not.be.equal( proxyEmitter2a );
-			expect( proxyEmitterB ).to.not.be.equal( proxyEmitter2b );
+			expect( proxyEmitter ).to.not.be.equal( proxyEmitter2 );
 
 			sinon.assert.calledOnce( spy1a );
 			sinon.assert.calledOnce( spy1b );
 			sinon.assert.calledOnce( spy1c );
-			sinon.assert.calledTwice( spyFireA );
-			sinon.assert.calledOnce( spyFireB );
+			sinon.assert.calledOnce( spy1d );
+			sinon.assert.calledTwice( spy2 );
+			sinon.assert.calledTwice( spy3 );
 			sinon.assert.calledOnce( spyEl2 );
-			sinon.assert.calledOnce( spy2a );
-			sinon.assert.calledOnce( spy2b );
-			sinon.assert.calledOnce( spy2c );
-			sinon.assert.calledTwice( spyFire2a );
-			sinon.assert.calledOnce( spyFire2b );
 		} );
 
 		// #187

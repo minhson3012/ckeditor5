@@ -143,7 +143,10 @@ describe( 'image utils', () => {
 
 		describe( 'when one of the image editing plugins is not loaded', () => {
 			const returnValue = {
-				name: 'img'
+				name: 'img',
+				attributes: {
+					src: true
+				}
 			};
 
 			it( 'should return a matcher pattern for an img element if ImageBlockEditing plugin is not loaded', () => {
@@ -225,7 +228,8 @@ describe( 'image utils', () => {
 						writer.appendChild( element, writer.createElement( 'figure', { class: 'image' } ) );
 
 						expect( matcherPattern( element ) ).to.deep.equal( {
-							name: true
+							name: true,
+							attributes: [ 'src' ]
 						} );
 					} );
 				} );
@@ -260,7 +264,8 @@ describe( 'image utils', () => {
 						element = writer.createElement( 'img', { src: 'sample.jpg' } );
 
 						expect( matcherPattern( element ) ).to.deep.equal( {
-							name: true
+							name: true,
+							attributes: [ 'src' ]
 						} );
 					} );
 
@@ -272,7 +277,8 @@ describe( 'image utils', () => {
 						);
 
 						expect( matcherPattern( fragment.selection.getSelectedElement() ) ).to.deep.equal( {
-							name: true
+							name: true,
+							attributes: [ 'src' ]
 						} );
 					} );
 				} );

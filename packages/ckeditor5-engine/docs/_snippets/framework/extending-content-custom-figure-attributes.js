@@ -176,10 +176,8 @@ ClassicEditor
 	.create( document.querySelector( '#snippet-custom-figure-attributes' ), {
 		cloudServices: CS_CONFIG,
 		extraPlugins: [ CustomFigureAttributes ],
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+		toolbar: {
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		}
 	} )
 	.then( editor => {

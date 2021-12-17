@@ -21,6 +21,7 @@ import { getData as getViewData, parse as parseView } from '@ckeditor/ckeditor5-
 import IndentEditing from '@ckeditor/ckeditor5-indent/src/indentediting';
 
 import { getCode } from '@ckeditor/ckeditor5-utils/src/keyboard';
+import { assertEqualMarkup } from '@ckeditor/ckeditor5-utils/tests/_utils/utils';
 import TableEditing from '@ckeditor/ckeditor5-table/src/tableediting';
 import Paragraph from '@ckeditor/ckeditor5-paragraph/src/paragraph';
 import testUtils from '@ckeditor/ckeditor5-core/tests/_utils/utils';
@@ -428,10 +429,7 @@ describe( 'ListEditing', () => {
 			}
 
 			testList( 'single item', '<ul><li>x</li></ul>' );
-			testList( 'single item with spaces', '<ul><li>&nbsp;x&nbsp;</li></ul>' );
 			testList( 'multiple items', '<ul><li>a</li><li>b</li><li>c</li></ul>' );
-			testList( 'multiple items with leading space in first', '<ul><li>&nbsp;a</li><li>b</li><li>c</li></ul>' );
-			testList( 'multiple items with trailing space in last', '<ul><li>a</li><li>b</li><li>c&nbsp;</li></ul>' );
 			testList( 'items and text', '<p>xxx</p><ul><li>a</li><li>b</li></ul><p>yyy</p><ul><li>c</li><li>d</li></ul>' );
 			testList( 'numbered list', '<ol><li>a</li><li>b</li></ol>' );
 			testList( 'mixed list and content #1', '<p>xxx</p><ul><li>a</li><li>b</li></ul><ol><li>c</li><li>d</li></ol><p>yyy</p>' );
@@ -1337,7 +1335,7 @@ describe( 'ListEditing', () => {
 			function testList( string, expectedString = null ) {
 				return () => {
 					editor.setData( string );
-					expect( editor.getData() ).to.equalMarkup( expectedString || string );
+					assertEqualMarkup( editor.getData(), expectedString || string );
 				};
 			}
 
@@ -1968,7 +1966,7 @@ describe( 'ListEditing', () => {
 						'<listItem listIndent="0" listType="bulleted">2</listItem>' +
 						'<paragraph>bar</paragraph>';
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( expectedModelData );
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), expectedModelData );
 				} );
 
 				it( 'should properly listIndent when list nested in other block', () => {
@@ -2026,7 +2024,7 @@ describe( 'ListEditing', () => {
 						'<listItem listIndent="0" listType="bulleted">f</listItem>' +
 						'<listItem listIndent="0" listType="bulleted">g</listItem>';
 
-					expect( getModelData( model, { withoutSelection: true } ) ).to.equalMarkup( expectedModelData );
+					assertEqualMarkup( getModelData( model, { withoutSelection: true } ), expectedModelData );
 				} );
 			} );
 		} );

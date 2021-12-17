@@ -52,6 +52,18 @@ export default {
 	block: [
 		// Existing features
 		{
+			model: 'heading1',
+			view: 'h2'
+		},
+		{
+			model: 'heading2',
+			view: 'h3'
+		},
+		{
+			model: 'heading3',
+			view: 'h4'
+		},
+		{
 			model: 'codeBlock',
 			view: 'pre'
 		},
@@ -98,14 +110,6 @@ export default {
 		{
 			model: 'caption',
 			view: 'figcaption'
-		},
-		{
-			model: 'imageBlock',
-			view: 'img'
-		},
-		{
-			model: 'imageInline',
-			view: 'img'
 		},
 
 		// Compatibility features
@@ -252,7 +256,7 @@ export default {
 			}
 		},
 		{
-			model: 'htmlSummary',
+			model: 'htmlSumary',
 			view: 'summary',
 			modelSchema: {
 				allowChildren: '$text',
@@ -314,12 +318,15 @@ export default {
 			view: 'hgroup',
 			modelSchema: {
 				allowChildren: [
-					'htmlH1',
-					'htmlH2',
-					'htmlH3',
-					'htmlH4',
-					'htmlH5',
-					'htmlH6'
+					'htmlHeading1',
+					'htmlHeading2',
+					'htmlHeading3',
+					'htmlHeading4',
+					'htmlHeading5',
+					'htmlHeading6',
+					'heading1',
+					'heading2',
+					'heading3'
 				],
 				isBlock: true
 			}
@@ -626,7 +633,7 @@ export default {
 				copyOnEnter: true
 			}
 		},
-		// TODO According to HTML-spec can behave as div-like element, although CKE4 only handles it as an inline element.
+		// TODO According to HTML-spec can behave as div-like element, althouth CKE4 only handles it as an inline element.
 		{
 			model: 'htmlDel',
 			view: 'del',
@@ -634,7 +641,7 @@ export default {
 				copyOnEnter: true
 			}
 		},
-		// TODO According to HTML-spec can behave as div-like element, although CKE4 only handles it as an inline element.
+		// TODO According to HTML-spec can behave as div-like element, althouth CKE4 only handles it as an inline element.
 		{
 			model: 'htmlIns',
 			view: 'ins',

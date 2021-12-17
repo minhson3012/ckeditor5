@@ -40,29 +40,15 @@ export default function verticalNavigationHandler( editing ) {
 		// Find a range between selection and closest limit element.
 		const range = findTextRangeFromSelection( editing, selection, isForward );
 
-		// There is no selection position inside the limit element.
-		if ( !range ) {
+		if ( !range || range.isCollapsed ) {
 			return;
-		}
-
-		// If already at the edge of a limit element.
-		if ( range.isCollapsed ) {
-			// A collapsed selection at limit edge - nothing more to do.
-			if ( selection.isCollapsed ) {
-				return;
-			}
-
-			// A non collapsed selection is at the limit edge while expanding the selection - let others do their stuff.
-			else if ( expandSelection ) {
-				return;
-			}
 		}
 
 		// If the range is a single line (there is no word wrapping) then move the selection to the position closest to the limit element.
 		//
 		// We can't move the selection directly to the isObject element (eg. table cell) because of dual position at the end/beginning
 		// of wrapped line (it's at the same time at the end of one line and at the start of the next line).
-		if ( range.isCollapsed || isSingleLineRange( editing, range, isForward ) ) {
+		if ( isSingleLineRange( editing, range, isForward ) ) {
 			model.change( writer => {
 				const newPosition = isForward ? range.end : range.start;
 
@@ -108,7 +94,7 @@ function findTextRangeFromSelection( editing, selection, isForward ) {
 		const range = model.createRange( startPosition, endPosition );
 		const lastRangePosition = getNearestTextPosition( model.schema, range, 'backward' );
 
-		if ( lastRangePosition ) {
+		if ( lastRangePosition && startPosition.isBefore( lastRangePosition ) ) {
 			return model.createRange( startPosition, lastRangePosition );
 		}
 
@@ -125,7 +111,7 @@ function findTextRangeFromSelection( editing, selection, isForward ) {
 		const range = model.createRange( startPosition, endPosition );
 		const firstRangePosition = getNearestTextPosition( model.schema, range, 'forward' );
 
-		if ( firstRangePosition ) {
+		if ( firstRangePosition && endPosition.isAfter( firstRangePosition ) ) {
 			return model.createRange( firstRangePosition, endPosition );
 		}
 
@@ -166,7 +152,7 @@ function getNearestNonInlineLimit( model, startPosition, direction ) {
 // @param {module:engine/model/schema~Schema} schema The schema.
 // @param {module:engine/model/range~Range} range The range to find the position in.
 // @param {'forward'|'backward'} direction Search direction.
-// @returns {module:engine/model/position~Position|null} The nearest selection position.
+// @returns {module:engine/model/position~Position} The nearest selection range.
 //
 function getNearestTextPosition( schema, range, direction ) {
 	const position = direction == 'backward' ? range.end : range.start;
@@ -180,8 +166,6 @@ function getNearestTextPosition( schema, range, direction ) {
 			return nextPosition;
 		}
 	}
-
-	return null;
 }
 
 // Checks if the DOM range corresponding to the provided model range renders as a single line by analyzing DOMRects

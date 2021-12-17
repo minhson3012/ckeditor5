@@ -435,14 +435,12 @@ function getWebpackConfig( snippets, config ) {
 						'css-loader',
 						{
 							loader: 'postcss-loader',
-							options: {
-								postcssOptions: styles.getPostCssConfig( {
-									themeImporter: {
-										themePath: require.resolve( '@ckeditor/ckeditor5-theme-lark' )
-									},
-									minify: config.production
-								} )
-							}
+							options: styles.getPostCssConfig( {
+								themeImporter: {
+									themePath: require.resolve( '@ckeditor/ckeditor5-theme-lark' )
+								},
+								minify: config.production
+							} )
 						}
 					]
 				}

@@ -579,7 +579,7 @@ describe( 'PictureEditing', () => {
 					expect( getModelData( model ) ).to.equal( '<paragraph>[]foobar</paragraph>' );
 				} );
 
-				it( 'should upcast <picture> (and not throw) if the <img> inside was broken (without src attribute)', () => {
+				it( 'should not upcast <picture> (and not throw) if the <img> inside was broken and could not be upcasted', () => {
 					editor.data.upcastDispatcher.on( 'element:picture', ( evt, data, conversionApi ) => {
 						for ( const childSourceElement of data.viewItem.getChildren() ) {
 							conversionApi.consumable.consume( childSourceElement, { attributes: 'media' } );
@@ -591,19 +591,13 @@ describe( 'PictureEditing', () => {
 							'foo<picture>' +
 								'<source srcset="/assets/sample.png" type="image/png" media="(min-width: 800px)">' +
 								'<source srcset="/assets/sample.png?foo" type="image/png" media="(max-width: 800px)">' +
-								'<img alt="alt text">' +
+								// Sourceless <img> does not make sense.
+								'<img>' +
 							'</picture>bar' +
 						'</p>'
 					);
 
-					expect( getModelData( model ) ).to.equal(
-						'<paragraph>[]' +
-							'foo' +
-							'<imageInline alt="alt text" sources="[object Object],[object Object]">' +
-							'</imageInline>' +
-							'bar' +
-						'</paragraph>'
-					);
+					expect( getModelData( model ) ).to.equal( '<paragraph>[]foobar</paragraph>' );
 				} );
 			} );
 		} );

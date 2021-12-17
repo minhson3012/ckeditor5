@@ -38,12 +38,8 @@ ClassicEditor.defaultConfig = {
 			'link', 'blockQuote',
 			'|',
 			'undo', 'redo'
-		]
-	},
-	ui: {
-		viewportOffset: {
-			top: window.getViewportTopOffsetConfig()
-		}
+		],
+		viewportTopOffset: window.getViewportTopOffsetConfig()
 	},
 	indentBlock: { offset: 30, unit: 'px' }
 };

@@ -14,7 +14,11 @@ import Bold from '@ckeditor/ckeditor5-basic-styles/src/bold';
 import BlockQuote from '@ckeditor/ckeditor5-block-quote/src/blockquote';
 import Widget from '../src/widget';
 import WidgetToolbarRepository from '../src/widgettoolbarrepository';
-import { isWidget, toWidget } from '../src/utils';
+import {
+	isWidget,
+	toWidget,
+	centeredBalloonPositionForLongWidgets
+} from '../src/utils';
 import ButtonView from '@ckeditor/ckeditor5-ui/src/button/buttonview';
 import View from '@ckeditor/ckeditor5-ui/src/view';
 
@@ -513,7 +517,7 @@ describe( 'WidgetToolbarRepository', () => {
 						defaultPositions.southArrowNorth,
 						defaultPositions.southArrowNorthWest,
 						defaultPositions.southArrowNorthEast,
-						defaultPositions.viewportStickyNorth
+						centeredBalloonPositionForLongWidgets
 					]
 				},
 				balloonClassName: 'ck-toolbar-container'

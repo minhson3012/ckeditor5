@@ -11,7 +11,10 @@ import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
 import ContextualBalloon from '@ckeditor/ckeditor5-ui/src/panel/balloon/contextualballoon';
 import ToolbarView from '@ckeditor/ckeditor5-ui/src/toolbar/toolbarview';
 import BalloonPanelView from '@ckeditor/ckeditor5-ui/src/panel/balloon/balloonpanelview';
-import { isWidget } from './utils';
+import {
+	isWidget,
+	centeredBalloonPositionForLongWidgets
+} from './utils';
 import CKEditorError, { logWarning } from '@ckeditor/ckeditor5-utils/src/ckeditorerror';
 
 /**
@@ -286,7 +289,7 @@ function getBalloonPositionData( editor, relatedElement ) {
 			defaultPositions.southArrowNorth,
 			defaultPositions.southArrowNorthWest,
 			defaultPositions.southArrowNorthEast,
-			defaultPositions.viewportStickyNorth
+			centeredBalloonPositionForLongWidgets
 		]
 	};
 }

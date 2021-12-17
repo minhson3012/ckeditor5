@@ -35,10 +35,8 @@ ClassicEditor
 	.create( document.querySelector( '#snippet-link-external' ), {
 		cloudServices: CS_CONFIG,
 		extraPlugins: [ AddTargetToExternalLinks ],
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+		toolbar: {
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		}
 	} )
 	.then( editor => {

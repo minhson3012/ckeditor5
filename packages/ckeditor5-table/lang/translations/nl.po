@@ -38,7 +38,7 @@ msgstr "Verwijder kolom"
 
 msgctxt "Label for the select the entire table column button."
 msgid "Select column"
-msgstr "Selecteer kolom"
+msgstr ""
 
 msgctxt "Label for the table column dropdown button."
 msgid "Column"
@@ -62,7 +62,7 @@ msgstr "Verwijder rij"
 
 msgctxt "Label for the select the entire table row button."
 msgid "Select row"
-msgstr "Selecteer rij"
+msgstr ""
 
 msgctxt "Label for the table row dropdown button."
 msgid "Row"

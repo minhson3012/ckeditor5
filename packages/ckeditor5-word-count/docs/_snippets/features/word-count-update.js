@@ -39,12 +39,8 @@ BalloonEditor
 				'|',
 				'undo',
 				'redo'
-			]
-		},
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+			],
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		},
 		placeholder: 'Text of the post',
 		table: {

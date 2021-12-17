@@ -44,12 +44,8 @@ ClassicEditor
 				'|',
 				'undo',
 				'redo'
-			]
-		},
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+			],
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		},
 		image: {
 			toolbar: [

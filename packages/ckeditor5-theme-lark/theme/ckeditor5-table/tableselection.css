@@ -32,16 +32,8 @@
 			background-color: transparent;
 		}
 
-		/*
-		 * To reduce the amount of noise, all widgets in the table selection have no outline and no selection handle.
-		 * See https://github.com/ckeditor/ckeditor5/issues/9491.
-		 */
-		& .ck-widget {
+		& .ck-widget_selected {
 			outline: unset;
-
-			& > .ck-widget__selection-handle {
-				display: none;
-			}
 		}
 	}
 }

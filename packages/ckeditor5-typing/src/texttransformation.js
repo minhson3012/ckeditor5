@@ -19,11 +19,11 @@ const TRANSFORMATIONS = {
 	trademark: { from: '(tm)', to: '™' },
 
 	// Mathematical:
-	oneHalf: { from: /(^|[^/a-z0-9])(1\/2)([^/a-z0-9])$/i, to: [ null, '½', null ] },
-	oneThird: { from: /(^|[^/a-z0-9])(1\/3)([^/a-z0-9])$/i, to: [ null, '⅓', null ] },
-	twoThirds: { from: /(^|[^/a-z0-9])(2\/3)([^/a-z0-9])$/i, to: [ null, '⅔', null ] },
-	oneForth: { from: /(^|[^/a-z0-9])(1\/4)([^/a-z0-9])$/i, to: [ null, '¼', null ] },
-	threeQuarters: { from: /(^|[^/a-z0-9])(3\/4)([^/a-z0-9])$/i, to: [ null, '¾', null ] },
+	oneHalf: { from: '1/2', to: '½' },
+	oneThird: { from: '1/3', to: '⅓' },
+	twoThirds: { from: '2/3', to: '⅔' },
+	oneForth: { from: '1/4', to: '¼' },
+	threeQuarters: { from: '3/4', to: '¾' },
 	lessThanOrEqual: { from: '<=', to: '≤' },
 	greaterThanOrEqual: { from: '>=', to: '≥' },
 	notEqual: { from: '!=', to: '≠' },
@@ -77,13 +77,6 @@ export default class TextTransformation extends Plugin {
 	/**
 	 * @inheritDoc
 	 */
-	static get requires() {
-		return [ 'Delete', 'Input' ];
-	}
-
-	/**
-	 * @inheritDoc
-	 */
 	static get pluginName() {
 		return 'TextTransformation';
 	}
@@ -124,8 +117,7 @@ export default class TextTransformation extends Plugin {
 	_enableTransformationWatchers() {
 		const editor = this.editor;
 		const model = editor.model;
-		const inputPlugin = editor.plugins.get( 'Input' );
-		const deletePlugin = editor.plugins.get( 'Delete' );
+		const input = editor.plugins.get( 'Input' );
 		const normalizedTransformations = normalizeTransformations( editor.config.get( 'typing.transformations' ) );
 
 		const testCallback = text => {
@@ -140,7 +132,7 @@ export default class TextTransformation extends Plugin {
 		};
 
 		const watcherCallback = ( evt, data ) => {
-			if ( !inputPlugin.isInput( data.batch ) ) {
+			if ( !input.isInput( data.batch ) ) {
 				return;
 			}
 
@@ -172,10 +164,6 @@ export default class TextTransformation extends Plugin {
 
 					changeIndex += replaceWith.length;
 				}
-
-				model.enqueueChange( () => {
-					deletePlugin.requestUndoOnBackspace();
-				} );
 			} );
 		};
 

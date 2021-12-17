@@ -230,12 +230,8 @@ ClassicEditor
 	.create( document.querySelector( '#snippet-block-widget' ), {
 		plugins: [ Essentials, Bold, Italic, Heading, List, Paragraph, SimpleBox ],
 		toolbar: {
-			items: [ 'heading', '|', 'bold', 'italic', 'numberedList', 'bulletedList', 'simpleBox' ]
-		},
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+			items: [ 'heading', '|', 'bold', 'italic', 'numberedList', 'bulletedList', 'simpleBox' ],
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		}
 	} )
 	.then( editor => {

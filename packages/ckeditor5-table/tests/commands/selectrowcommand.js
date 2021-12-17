@@ -31,12 +31,6 @@ describe( 'SelectRowCommand', () => {
 		return editor.destroy();
 	} );
 
-	describe( 'constructor()', () => {
-		it( 'sets public properties', () => {
-			expect( command ).to.have.property( 'affectsData', false );
-		} );
-	} );
-
 	describe( 'isEnabled', () => {
 		it( 'should be true if the selection is inside table cell', () => {
 			setData( model, modelTable( [
@@ -58,16 +52,6 @@ describe( 'SelectRowCommand', () => {
 				modelRoot.getNodeByPath( [ 0, 0, 0 ] ),
 				modelRoot.getNodeByPath( [ 0, 0, 1 ] )
 			);
-
-			expect( command.isEnabled ).to.be.true;
-		} );
-
-		it( 'should be true if the selection is inside the table and the editor is read-only', () => {
-			setData( model, modelTable( [
-				[ '00[]' ]
-			] ) );
-
-			editor.isReadOnly = true;
 
 			expect( command.isEnabled ).to.be.true;
 		} );

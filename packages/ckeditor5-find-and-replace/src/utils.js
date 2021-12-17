@@ -4,7 +4,7 @@
  */
 
 /**
- * @module find-and-replace/utils
+ * @module find-and-replace
  */
 
 import { uid, Collection } from 'ckeditor5/src/utils';
@@ -13,11 +13,11 @@ import { escapeRegExp } from 'lodash-es';
 /**
  * Executes findCallback and updates search results list.
  *
- * @param {module:engine/model/range~Range} range The model range to scan for matches.
- * @param {module:engine/model/model~Model} model The model.
- * @param {Function} findCallback The callback that should return `true` if provided text matches the search term.
+ * @param {module:engine/model/range~Range} range
+ * @param {module:engine/model/model~Model} model
+ * @param {Function} findCallback
  * @param {module:utils/collection~Collection} [startResults] An optional collection of find matches that the function should
- * start with. This would be a collection returned by a previous `updateFindResultFromRange()` call.
+ * starts with. This would be a collection returned by a previous `updateFindResultFromRange()` call.
  * @returns {module:utils/collection~Collection} A collection of objects describing find match.
  *
  * An example structure:
@@ -33,20 +33,20 @@ import { escapeRegExp } from 'lodash-es';
 export function updateFindResultFromRange( range, model, findCallback, startResults ) {
 	const results = startResults || new Collection();
 
-	model.change( writer => {
-		[ ...range ].forEach( ( { type, item } ) => {
-			if ( type === 'elementStart' ) {
-				if ( model.schema.checkChild( item, '$text' ) ) {
-					const foundItems = findCallback( {
-						item,
-						text: rangeToText( model.createRangeIn( item ) )
-					} );
+	[ ...range ].forEach( ( { type, item } ) => {
+		if ( type === 'elementStart' ) {
+			if ( model.schema.checkChild( item, '$text' ) ) {
+				const foundItems = findCallback( {
+					item,
+					text: rangeToText( model.createRangeIn( item ) )
+				} );
 
-					if ( !foundItems ) {
-						return;
-					}
+				if ( !foundItems ) {
+					return;
+				}
 
-					foundItems.forEach( foundItem => {
+				foundItems.forEach( foundItem => {
+					model.change( writer => {
 						const resultId = `findResult:${ uid() }`;
 						const marker = writer.addMarker( resultId, {
 							usingOperation: false,
@@ -68,9 +68,9 @@ export function updateFindResultFromRange( range, model, findCallback, startResu
 							index
 						);
 					} );
-				}
+				} );
 			}
-		} );
+		}
 	} );
 
 	return results;
@@ -79,9 +79,6 @@ export function updateFindResultFromRange( range, model, findCallback, startResu
 /**
  * Returns text representation of a range. The returned text length should be the same as range length.
  * In order to achieve this this function will replace inline elements (text-line) as new line character ("\n").
- *
- * @param {module:engine/model/range~Range} range The model range.
- * @returns {String} The text content of the provided range.
  */
 export function rangeToText( range ) {
 	return Array.from( range.getItems() ).reduce( ( rangeText, node ) => {
@@ -96,7 +93,6 @@ export function rangeToText( range ) {
 	}, '' );
 }
 
-// Finds the appropriate index in the resultsList Collection.
 function findInsertIndex( resultsList, markerToInsert ) {
 	const result = resultsList.find( ( { marker } ) => {
 		return markerToInsert.getStart().isBefore( marker.getStart() );
@@ -105,7 +101,6 @@ function findInsertIndex( resultsList, markerToInsert ) {
 	return result ? resultsList.getIndex( result ) : resultsList.length;
 }
 
-// Maps RegExp match result to find result.
 function regexpMatchToFindResult( matchResult ) {
 	const lastGroupIndex = matchResult.length - 1;
 
@@ -125,10 +120,9 @@ function regexpMatchToFindResult( matchResult ) {
 }
 
 /**
- * Creates a text matching callback for a specified search term and matching options.
  *
- * @param {String} searchTerm The search term.
- * @param {Object} [options] Matching options.
+ * @param {String} searchTerm
+ * @param {Object} [options]
  * @param {Boolean} [options.matchCase=false] If set to `true` letter casing will be ignored.
  * @param {Boolean} [options.wholeWords=false] If set to `true` only whole words that match `callbackOrText` will be matched.
  * @returns {Function}
@@ -150,7 +144,7 @@ export function findByTextCallback( searchTerm, options ) {
 		}
 
 		if ( !new RegExp( nonLetterGroup + '$' ).test( searchTerm ) ) {
-			regExpQuery = `${ regExpQuery }(?=_|${ nonLetterGroup }|$)`;
+			regExpQuery = `${ regExpQuery }(?:_|${ nonLetterGroup }|$)`;
 		}
 	}
 

@@ -30,80 +30,80 @@ msgstr "代辦清單"
 
 msgctxt "The ARIA label of the toolbar displaying buttons allowing users to change the bulleted list style."
 msgid "Bulleted list styles toolbar"
-msgstr "無序清單工具列"
+msgstr ""
 
 msgctxt "The ARIA label of the toolbar displaying buttons allowing users to change the numbered list style."
 msgid "Numbered list styles toolbar"
-msgstr "有序清單工具列"
+msgstr ""
 
 msgctxt "The ARIA label of the button that toggles the \"disc\" list style."
 msgid "Toggle the disc list style"
-msgstr "切換為實心圓點標示"
+msgstr ""
 
 msgctxt "The ARIA label of the button that toggles the \"circle\" list style."
 msgid "Toggle the circle list style"
-msgstr "切換為空心圓點標示"
+msgstr ""
 
 msgctxt "The ARIA label of the button that toggles the \"square\" list style."
 msgid "Toggle the square list style"
-msgstr "切換為方形標示"
+msgstr ""
 
 msgctxt "The ARIA label of the button that toggles the \"decimal\" list style."
 msgid "Toggle the decimal list style"
-msgstr "切換為數字標示"
+msgstr ""
 
 msgctxt "The ARIA label of the button that toggles the \"decimal with leading zero\" list style."
 msgid "Toggle the decimal with leading zero list style"
-msgstr "切換為0開頭的數字標示"
+msgstr ""
 
 msgctxt "The ARIA label of the button that toggles the \"lower–roman\" list style."
 msgid "Toggle the lower–roman list style"
-msgstr "切換為小寫羅馬數字標示"
+msgstr ""
 
 msgctxt "The ARIA label of the button that toggles the \"upper–roman\" list style."
 msgid "Toggle the upper–roman list style"
-msgstr "切換為大寫羅馬數字標示"
+msgstr ""
 
 msgctxt "The ARIA label of the button that toggles the \"lower–latin\" list style."
 msgid "Toggle the lower–latin list style"
-msgstr "切換為小寫拉丁文字標示"
+msgstr ""
 
 msgctxt "The ARIA label of the button that toggles the \"upper–latin\" list style."
 msgid "Toggle the upper–latin list style"
-msgstr "切換為大寫拉丁文字標示"
+msgstr ""
 
 msgctxt "The tooltip text of the button that toggles the \"disc\" list style."
 msgid "Disc"
-msgstr "實心圓點"
+msgstr ""
 
 msgctxt "The tooltip text of the button that toggles the \"circle\" list style."
 msgid "Circle"
-msgstr "空心圓點"
+msgstr ""
 
 msgctxt "The tooltip text of the button that toggles the \"square\" list style."
 msgid "Square"
-msgstr "方形"
+msgstr ""
 
 msgctxt "The tooltip text of the button that toggles the \"decimal\" list style."
 msgid "Decimal"
-msgstr "數字"
+msgstr ""
 
 msgctxt "The tooltip text of the button that toggles the \"decimal with leading zero\" list style."
 msgid "Decimal with leading zero"
-msgstr "0開頭的數字"
+msgstr ""
 
 msgctxt "The tooltip text of the button that toggles the \"lower–roman\" list style."
 msgid "Lower–roman"
-msgstr "小寫羅馬數字"
+msgstr ""
 
 msgctxt "The tooltip text of the button that toggles the \"upper–roman\" list style."
 msgid "Upper-roman"
-msgstr "大寫羅馬數字"
+msgstr ""
 
 msgctxt "The tooltip text of the button that toggles the \"lower–latin\" list style."
 msgid "Lower-latin"
-msgstr "小寫拉丁字母"
+msgstr ""
 
 msgctxt "The tooltip text of the button that toggles the \"upper–latin\" list style."
 msgid "Upper-latin"
-msgstr "大寫拉丁字母"
+msgstr ""

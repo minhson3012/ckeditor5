@@ -18,12 +18,8 @@ ClassicEditor
 		toolbar: {
 			items: [
 				'bold', 'italic', 'underline', 'strikethrough', '|', 'link', '|', 'undo', 'redo'
-			]
-		},
-		ui: {
-			viewportOffset: {
-				top: window.getViewportTopOffsetConfig()
-			}
+			],
+			viewportTopOffset: window.getViewportTopOffsetConfig()
 		},
 		mention: {
 			feeds: [

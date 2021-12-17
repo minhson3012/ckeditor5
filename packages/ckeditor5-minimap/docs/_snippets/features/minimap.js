@@ -96,12 +96,7 @@ const config = {
 		container: document.querySelector( '.minimap-container' ),
 		extraClasses: 'live-snippet formatted'
 	},
-	cloudServices: CS_CONFIG,
-	ui: {
-		viewportOffset: {
-			top: window.getViewportTopOffsetConfig()
-		}
-	}
+	cloudServices: CS_CONFIG
 };
 
 DecoupledEditor

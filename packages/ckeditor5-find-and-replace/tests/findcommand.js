@@ -27,17 +27,6 @@ describe( 'FindCommand', () => {
 		return editor.destroy();
 	} );
 
-	describe( 'constructor()', () => {
-		it( 'sets public properties', () => {
-			expect( command ).to.have.property( 'isEnabled', true );
-			expect( command ).to.have.property( 'affectsData', false );
-		} );
-
-		it( 'sets state property', () => {
-			expect( command ).to.have.property( '_state', editor.plugins.get( 'FindAndReplaceEditing' ).state );
-		} );
-	} );
-
 	describe( 'isEnabled', () => {
 		it( 'should be enabled in empty document', () => {
 			setData( model, '[]' );
@@ -51,19 +40,15 @@ describe( 'FindCommand', () => {
 
 		it( 'should be enabled in readonly mode editor', () => {
 			setData( model, '<paragraph>foo[]</paragraph>' );
-
 			editor.isReadOnly = true;
 
 			expect( command.isEnabled ).to.be.true;
 		} );
+	} );
 
-		it( 'should be enabled after disabling readonly mode', () => {
-			setData( model, '<paragraph>foo[]</paragraph>' );
-
-			editor.isReadOnly = true;
-			editor.isReadOnly = false;
-
-			expect( command.isEnabled ).to.be.true;
+	describe( 'state', () => {
+		it( 'is set to plugin\'s state', () => {
+			expect( command.state ).to.equal( editor.plugins.get( 'FindAndReplaceEditing' ).state );
 		} );
 	} );
 
@@ -78,17 +63,6 @@ describe( 'FindCommand', () => {
 				expect( stringify( model.document.getRoot(), null, markers ) ).to.equal(
 					'<paragraph>Foo <X:start></X:start>bar<X:end></X:end> baz. Bam <X:start></X:start>bar<X:end></X:end> bom.</paragraph>'
 				);
-			} );
-
-			it( 'calls model.change() only once', () => {
-				setData( model, '<paragraph>[]Foo bar baz. Bam bar bar bar bar bom.</paragraph>' );
-				const spy = sinon.spy( model, 'change' );
-
-				command.execute( 'bar' );
-
-				// It's called two additional times
-				// from 'change:highlightedResult' handler in FindAndReplaceEditing.
-				expect( spy.callCount ).to.equal( 3 );
 			} );
 
 			it( 'returns no result if nothing matched', () => {
@@ -297,14 +271,6 @@ describe( 'FindCommand', () => {
 					const { results } = command.execute( 'bar', { wholeWords: true } );
 
 					expect( results.length ).to.equal( 0 );
-				} );
-
-				it( 'set to true matches words separated by a single space', () => {
-					editor.setData( '<p>bar bar</p>' );
-
-					const { results } = command.execute( 'bar', { wholeWords: true } );
-
-					expect( results.length ).to.equal( 2 );
 				} );
 
 				it( 'is disabled by default', () => {

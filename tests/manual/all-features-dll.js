@@ -238,7 +238,9 @@ const config = {
 			isGallery: {
 				mode: 'manual',
 				label: 'Gallery link',
-				classes: 'gallery'
+				attributes: {
+					class: 'gallery'
+				}
 			}
 		}
 	},

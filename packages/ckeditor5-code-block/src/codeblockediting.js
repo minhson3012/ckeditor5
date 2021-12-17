@@ -219,7 +219,7 @@ export default class CodeBlockEditing extends Plugin {
 
 		// Customize the response to the <kbd>Enter</kbd> and <kbd>Shift</kbd>+<kbd>Enter</kbd>
 		// key press when the selection is in the code block. Upon enter key press we can either
-		// leave the block if it's "two or three enters" in a row or create a new code block line, preserving
+		// leave the block if it's "two enters" in a row or create a new code block line, preserving
 		// previous line's indentation.
 		this.listenTo( editor.editing.view.document, 'enter', ( evt, data ) => {
 			const positionParent = editor.model.document.selection.getLastPosition().parent;
@@ -301,7 +301,7 @@ function leaveBlockStartOnEnter( editor, isSoftEnter ) {
 		return false;
 	}
 
-	if ( !isSoftBreakNode( nodeAfter ) ) {
+	if ( !nodeAfter || !nodeAfter.is( 'element', 'softBreak' ) ) {
 		return false;
 	}
 
@@ -352,61 +352,42 @@ function leaveBlockEndOnEnter( editor, isSoftEnter ) {
 
 	let emptyLineRangeToRemoveOnEnter;
 
-	if ( isSoftEnter || !modelDoc.selection.isCollapsed || !lastSelectionPosition.isAtEnd || !nodeBefore || !nodeBefore.previousSibling ) {
+	if ( isSoftEnter || !modelDoc.selection.isCollapsed || !lastSelectionPosition.isAtEnd || !nodeBefore ) {
 		return false;
 	}
 
-	// When the position is directly preceded by two soft breaks
+	// When the position is directly preceded by a soft break
 	//
-	//		<codeBlock>foo<softBreak></softBreak><softBreak></softBreak>[]</codeBlock>
+	//		<codeBlock>foo<softBreak></softBreak>[]</codeBlock>
 	//
 	// it creates the following range that will be cleaned up before leaving:
 	//
-	//		<codeBlock>foo[<softBreak></softBreak><softBreak></softBreak>]</codeBlock>
+	//		<codeBlock>foo[<softBreak></softBreak>]</codeBlock>
 	//
-	if ( isSoftBreakNode( nodeBefore ) && isSoftBreakNode( nodeBefore.previousSibling ) ) {
+	if ( nodeBefore.is( 'element', 'softBreak' ) ) {
+		emptyLineRangeToRemoveOnEnter = model.createRangeOn( nodeBefore );
+	}
+
+	// When there's some text before the position made purely of white–space characters
+	//
+	//		<codeBlock>foo<softBreak></softBreak>    []</codeBlock>
+	//
+	// but NOT when it's the first one of the kind
+	//
+	//		<codeBlock>    []</codeBlock>
+	//
+	// it creates the following range to clean up before leaving:
+	//
+	//		<codeBlock>foo[<softBreak></softBreak>    ]</codeBlock>
+	//
+	else if (
+		nodeBefore.is( '$text' ) &&
+		!nodeBefore.data.match( /\S/ ) &&
+		nodeBefore.previousSibling &&
+		nodeBefore.previousSibling.is( 'element', 'softBreak' )
+	) {
 		emptyLineRangeToRemoveOnEnter = model.createRange(
 			model.createPositionBefore( nodeBefore.previousSibling ), model.createPositionAfter( nodeBefore )
-		);
-	}
-
-	// When there's some text before the position that is
-	// preceded by two soft breaks and made purely of white–space characters
-	//
-	//		<codeBlock>foo<softBreak></softBreak><softBreak></softBreak>    []</codeBlock>
-	//
-	// it creates the following range to clean up before leaving:
-	//
-	//		<codeBlock>foo[<softBreak></softBreak><softBreak></softBreak>    ]</codeBlock>
-	//
-	else if (
-		isEmptyishTextNode( nodeBefore ) &&
-		isSoftBreakNode( nodeBefore.previousSibling ) &&
-		isSoftBreakNode( nodeBefore.previousSibling.previousSibling )
-	) {
-		emptyLineRangeToRemoveOnEnter = model.createRange(
-			model.createPositionBefore( nodeBefore.previousSibling.previousSibling ), model.createPositionAfter( nodeBefore )
-		);
-	}
-
-	// When there's some text before the position that is made purely of white–space characters
-	// and is preceded by some other text made purely of white–space characters
-	//
-	//		<codeBlock>foo<softBreak></softBreak>    <softBreak></softBreak>    []</codeBlock>
-	//
-	// it creates the following range to clean up before leaving:
-	//
-	//		<codeBlock>foo[<softBreak></softBreak>    <softBreak></softBreak>    ]</codeBlock>
-	//
-	else if (
-		isEmptyishTextNode( nodeBefore ) &&
-		isSoftBreakNode( nodeBefore.previousSibling ) &&
-		isEmptyishTextNode( nodeBefore.previousSibling.previousSibling ) &&
-		isSoftBreakNode( nodeBefore.previousSibling.previousSibling.previousSibling )
-	) {
-		emptyLineRangeToRemoveOnEnter = model.createRange(
-			model.createPositionBefore( nodeBefore.previousSibling.previousSibling.previousSibling ),
-			model.createPositionAfter( nodeBefore )
 		);
 	}
 
@@ -414,9 +395,8 @@ function leaveBlockEndOnEnter( editor, isSoftEnter ) {
 	//
 	//		<codeBlock>    []</codeBlock>
 	//		<codeBlock>  a []</codeBlock>
-	//		<codeBlock>foo<softBreak></softBreak>[]</codeBlock>
-	//		<codeBlock>foo<softBreak></softBreak><softBreak></softBreak>bar[]</codeBlock>
-	//		<codeBlock>foo<softBreak></softBreak><softBreak></softBreak> a []</codeBlock>
+	//		<codeBlock>foo<softBreak></softBreak>bar[]</codeBlock>
+	//		<codeBlock>foo<softBreak></softBreak> a []</codeBlock>
 	//
 	else {
 		return false;
@@ -424,7 +404,7 @@ function leaveBlockEndOnEnter( editor, isSoftEnter ) {
 
 	// We're doing everything in a single change block to have a single undo step.
 	editor.model.change( writer => {
-		// Remove the last <softBreak>s and all white space characters that followed them.
+		// Remove the last <softBreak> and all white space characters that followed it.
 		writer.remove( emptyLineRangeToRemoveOnEnter );
 
 		// "Clone" the <codeBlock> in the standard way.
@@ -441,12 +421,4 @@ function leaveBlockEndOnEnter( editor, isSoftEnter ) {
 	view.scrollToTheSelection();
 
 	return true;
-}
-
-function isEmptyishTextNode( node ) {
-	return node && node.is( '$text' ) && !node.data.match( /\S/ );
-}
-
-function isSoftBreakNode( node ) {
-	return node && node.is( 'element', 'softBreak' );
 }
