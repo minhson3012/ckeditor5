@@ -43,6 +43,10 @@ export function mergeViewElementAttributes( target, source ) {
 	const result = cloneDeep( target );
 
 	for ( const key in source ) {
+		//If target is empty, just copy the source.
+		if (target[key] === undefined) {
+			result[key] = source[key];
+		}
 		// Merge classes.
 		if ( Array.isArray( source[ key ] ) ) {
 			result[ key ] = Array.from( new Set( [ ...target[ key ], ...source[ key ] ] ) );
