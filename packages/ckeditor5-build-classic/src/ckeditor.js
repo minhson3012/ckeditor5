@@ -1110,6 +1110,20 @@ ClassicEditor.defaultConfig = {
 			},
 		},
 	},
+	fontSize: {
+		options: [
+			'8',
+			'10',
+			'12',
+			'13',
+			'14',
+			'16',
+			'18',
+			'24',
+			'36',
+			'48'
+		]
+	},
 	// This value must be kept in sync with the language defined in webpack.config.js.
 	language: 'vi',
 };
