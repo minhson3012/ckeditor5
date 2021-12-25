@@ -59,6 +59,74 @@ import {
 // The draggable-card editor plugin.
 //
 
+
+class CustomFontSizeUI extends Plugin {
+	init() {
+		this.editor.ui.componentFactory.add( 'fontSizeDropdown', () => {
+			const editor = this.editor;
+
+			const command = editor.commands.get( 'fontSize' );
+
+			// Use original fontSize button - we only changes its behavior.
+			const dropdownView = editor.ui.componentFactory.create( 'fontSize' );
+
+			// Show label on dropdown's button.
+			dropdownView.buttonView.set( 'withText', true );
+
+			// Disable icon on the button.
+			dropdownView.buttonView.set( 'icon', false );
+
+			// To hide the icon uncomment below.
+			// dropdownView.buttonView.set( 'icon', false );
+
+			// Bind dropdown's button label to fontSize value.
+			dropdownView.buttonView.bind( 'label' ).to( command, 'value', value => {
+				// If no value is set on the command show 'Default' text.
+				// Use t() method to make that string translatable.
+				return value ? value : '16'; // The Default size is '16'
+			} );
+
+			return dropdownView;
+		} );
+	}
+}
+
+class CustomFontFamilyUI extends Plugin {
+	init() {
+		this.editor.ui.componentFactory.add( 'fontFamilyDropdown', () => {
+			const editor = this.editor;
+			const t = editor.t;
+			const command = editor.commands.get( 'fontFamily' );
+
+			// Use original fontSize button - we only changes its behavior.
+			const dropdownView = editor.ui.componentFactory.create( 'fontFamily' );
+
+			// Show label on dropdown's button.
+			dropdownView.buttonView.set( 'withText', true );
+
+			// Disable icon on the button.
+			dropdownView.buttonView.set( 'icon', false );
+
+			// To hide the icon uncomment below.
+			// dropdownView.buttonView.set( 'icon', false );
+
+			// Bind dropdown's button label to fontSize value.
+			dropdownView.buttonView.bind( 'label' ).to( command, 'value', value => {
+				// If no value is set on the command show 'Default' text.
+				// Use t() method to make that string translatable.
+				if(value && value.includes(',')) {
+					let valueArr = value.split(",");
+					return valueArr[0].replaceAll("'", "");
+				}
+				return value ? value : t('Default');
+			} );
+
+			return dropdownView;
+		} );
+	}
+}
+
+
 // #region HCardEditing
 class HCardEditing extends Plugin {
 	static get requires() {
@@ -914,6 +982,8 @@ ClassicEditor.builtinPlugins = [
 	MentionCustomization,
 	PageBreak,
 	ConvertDivAttributes,
+	CustomFontFamilyUI,
+	CustomFontSizeUI
 	// InputContractEditing,
 	// ConvertPAttributes,
 	// ConvertSpanAttributes,
@@ -927,8 +997,8 @@ ClassicEditor.defaultConfig = {
 		items: [
 			'heading',
 			'|',
-			'fontfamily',
-			'fontsize',
+			'fontFamilyDropdown',
+			'fontSizeDropdown',
 			'fontColor',
 			'fontBackgroundColor',
 			'|',
