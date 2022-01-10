@@ -4,7 +4,8 @@
  */
 
 import ClassicEditorBase from '@ckeditor/ckeditor5-editor-classic/src/classiceditor';
-
+import Command from '@ckeditor/ckeditor5-core/src/command';
+import first from '@ckeditor/ckeditor5-utils/src/first';
 import Essentials from '@ckeditor/ckeditor5-essentials/src/essentials';
 import Alignment from '@ckeditor/ckeditor5-alignment/src/alignment';
 import FontSize from '@ckeditor/ckeditor5-font/src/fontsize';
@@ -49,80 +50,82 @@ import PageBreak from '@ckeditor/ckeditor5-page-break/src/pagebreak';
 import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
 import Widget from '@ckeditor/ckeditor5-widget/src/widget';
 import UpcastWriter from '@ckeditor/ckeditor5-engine/src/view/upcastwriter';
+import Model from '@ckeditor/ckeditor5-ui/src/model';
+import Collection from '@ckeditor/ckeditor5-utils/src/collection';
 import {
 	toWidget,
 	viewToModelPositionOutsideModelElement,
 	toWidgetEditable
 } from '@ckeditor/ckeditor5-widget/src/utils';
-
+import { createDropdown, addListToDropdown } from '@ckeditor/ckeditor5-ui/src/dropdown/utils';
 //
 // The draggable-card editor plugin.
 //
 
-
+const LINE_HEIGHT = 'lineHeight';
 class CustomFontSizeUI extends Plugin {
 	init() {
-		this.editor.ui.componentFactory.add( 'fontSizeDropdown', () => {
+		this.editor.ui.componentFactory.add('fontSizeDropdown', () => {
 			const editor = this.editor;
 
-			const command = editor.commands.get( 'fontSize' );
+			const command = editor.commands.get('fontSize');
 
 			// Use original fontSize button - we only changes its behavior.
-			const dropdownView = editor.ui.componentFactory.create( 'fontSize' );
+			const dropdownView = editor.ui.componentFactory.create('fontSize');
 
 			// Show label on dropdown's button.
-			dropdownView.buttonView.set( 'withText', true );
+			dropdownView.buttonView.set('withText', true);
 
 			// Disable icon on the button.
-			dropdownView.buttonView.set( 'icon', false );
+			dropdownView.buttonView.set('icon', false);
 
 			// To hide the icon uncomment below.
 			// dropdownView.buttonView.set( 'icon', false );
 
 			// Bind dropdown's button label to fontSize value.
-			dropdownView.buttonView.bind( 'label' ).to( command, 'value', value => {
+			dropdownView.buttonView.bind('label').to(command, 'value', value => {
 				// If no value is set on the command show 'Default' text.
 				// Use t() method to make that string translatable.
-				return value ? value : '16'; // The Default size is '16'
-			} );
+				return value ? value : '16px'; // The Default size is '16'
+			});
 
 			return dropdownView;
-		} );
+		});
 	}
 }
 
 class CustomFontFamilyUI extends Plugin {
 	init() {
-		this.editor.ui.componentFactory.add( 'fontFamilyDropdown', () => {
+		this.editor.ui.componentFactory.add('fontFamilyDropdown', () => {
 			const editor = this.editor;
 			const t = editor.t;
-			const command = editor.commands.get( 'fontFamily' );
+			const command = editor.commands.get('fontFamily');
 
 			// Use original fontSize button - we only changes its behavior.
-			const dropdownView = editor.ui.componentFactory.create( 'fontFamily' );
+			const dropdownView = editor.ui.componentFactory.create('fontFamily');
 
 			// Show label on dropdown's button.
-			dropdownView.buttonView.set( 'withText', true );
+			dropdownView.buttonView.set('withText', true);
 
 			// Disable icon on the button.
-			dropdownView.buttonView.set( 'icon', false );
+			dropdownView.buttonView.set('icon', false);
 
 			// To hide the icon uncomment below.
 			// dropdownView.buttonView.set( 'icon', false );
 
 			// Bind dropdown's button label to fontSize value.
-			dropdownView.buttonView.bind( 'label' ).to( command, 'value', value => {
+			dropdownView.buttonView.bind('label').to(command, 'value', value => {
 				// If no value is set on the command show 'Default' text.
 				// Use t() method to make that string translatable.
-				if(value && value.includes(',')) {
+				if (value && value.includes(',')) {
 					let valueArr = value.split(",");
 					return valueArr[0].replaceAll("'", "");
 				}
 				return value ? value : t('Default');
-			} );
+			});
 
 			return dropdownView;
-		} );
+		});
 	}
 }
 
@@ -498,7 +501,7 @@ function genenerateTagElement(writer, fragment, data, templateData) {
 
 function getCardDataFromViewElement(viewElement) {
 	const children = Array.from(viewElement.getChildren());
-	console.log(children.childCount);
+	// console.log(children.childCount);
 	const textChildren = children.length ? Array.from(children[0].getChildren()) : [];
 	let textElement;
 	let imgElement;
@@ -887,8 +890,8 @@ class InputContractEditing extends Plugin {
 			model: (viewElement, { writer: modelWriter }) => {
 				const name = viewElement.getChild(0).data;
 				let attributes = viewElement.getAttributes();
-				for(let i = 0; i < attributes.length; i++) {
-					console.log("attribute", attributes[i]);
+				for (let i = 0; i < attributes.length; i++) {
+					// console.log("attribute", attributes[i]);
 				}
 				return modelWriter.createElement('inputcontract', { name, ...viewElement.getAttributes() });
 			}
@@ -919,9 +922,9 @@ class InputContractEditing extends Plugin {
 			const inputcontractView = viewWriter.createContainerElement('span', {
 				class: 'inputcontract'
 			}
-			// , {
-			// 	isAllowedInsideAttributeElement: true
-			// }
+				// , {
+				// 	isAllowedInsideAttributeElement: true
+				// }
 			);
 
 			// Insert the inputcontract name (as a text).
@@ -930,6 +933,358 @@ class InputContractEditing extends Plugin {
 
 			return inputcontractView;
 		}
+	}
+}
+
+class LineHeight extends Plugin {
+	// static get requires() {
+	// 	return { LineHeightEditing, LineHeightUI }
+	// }
+
+	// static get pluginName() {
+	// 	return 'LineHeight';
+	// }
+
+	constructor(editor) {
+		super(editor)
+
+		editor.config.define('lineHeight', {
+			options: [0, 0.5, 1, 1.5, 2]
+		})
+	}
+
+	init() {
+		const editor = this.editor
+		const t = editor.t
+
+		const options = this._getLocalizedOptions();
+
+		const schema = editor.model.schema
+
+		// Filter out unsupported options.
+		const enabledOptions = editor.config.get('lineHeight.options').map(option => String(option)).filter(isSupported) // filter
+
+		// Allow alignment attribute on all blocks.
+		schema.extend('$block', { allowAttributes: 'lineHeight' })
+		editor.model.schema.setAttributeProperties('lineHeight', { isFormatting: true })
+
+		const definition = buildDefinition(enabledOptions/* .filter( option => !isDefault( option ) ) */)
+
+		editor.conversion.attributeToAttribute(definition)
+
+		editor.commands.add('lineHeight', new LineHeightCommand(editor))
+
+		const command = editor.commands.get('lineHeight')
+
+		// Register UI component.
+		editor.ui.componentFactory.add('lineHeight', locale => {
+			const dropdownView = createDropdown(locale)
+			addListToDropdown(dropdownView, _prepareListOptions(options, command))
+
+			// Create dropdown model.
+			dropdownView.buttonView.set({
+				// label: 'Zeilenhöhe',
+				label: t('Line Height'),
+				icon: '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"  width="24" height="24" viewBox="0 0 24 24"><path fill="#000000" d="M10,13H22V11H10M10,19H22V17H10M10,7H22V5H10M6,7H8.5L5,3.5L1.5,7H4V17H1.5L5,20.5L8.5,17H6V7Z" /></svg>',
+				tooltip: true
+			})
+
+			dropdownView.extendTemplate({
+				attributes: {
+					class: [
+						'p0thi-ckeditor5-lineHeight-dropdown'
+					]
+				}
+			})
+
+			dropdownView.bind('isEnabled').to(command)
+
+			// Execute command when an item from the dropdown is selected.
+			this.listenTo(dropdownView, 'execute', evt => {
+				editor.execute(evt.source.commandName, { value: evt.source.commandParam })
+				editor.editing.view.focus()
+			})
+
+			return dropdownView
+		})
+
+
+	}
+
+	_getLocalizedOptions() {
+		const editor = this.editor
+		const t = editor.t
+
+		const localizedTitles = {
+			// Default: 'Standard'
+			Default: t('Default')
+		}
+
+		const options = normalizeOptions(editor.config.get('lineHeight.options').filter(option => isSupported(option)))
+
+		return options.map(option => {
+			const title = localizedTitles[option.title]
+
+			if (title && title != option.title) {
+				// Clone the option to avoid altering the original `namedPresets` from `./utils.js`.
+				option = Object.assign({}, option, { title })
+			}
+
+			return option
+		})
+	}
+}
+
+
+class LineHeightCommand extends Command {
+	// constructor( editor ) {
+	// 	super( editor );
+	// }
+
+	refresh() {
+		const firstBlock = first(this.editor.model.document.selection.getSelectedBlocks())
+
+		this.isEnabled = !!firstBlock && this._canSetLineHeight(firstBlock)
+
+		this.value = (this.isEnabled && firstBlock.hasAttribute(LINE_HEIGHT)) ? firstBlock.getAttribute(LINE_HEIGHT) : '1'
+	}
+
+	execute(options = {}) {
+		const editor = this.editor
+		const model = editor.model
+		const doc = model.document
+
+		// console.log(model.schema.getDefinitions())
+
+		// const value = '0'
+		const value = options.value
+
+		model.change(writer => {
+			const blocks = Array.from(doc.selection.getSelectedBlocks()).filter(block => this._canSetLineHeight(block))
+			const currentLineHeight = blocks[0].getAttribute(LINE_HEIGHT)
+
+			const removeLineHeight = /* isDefault( value ) ||  */currentLineHeight === value || typeof value === 'undefined'
+
+			// console.log(value, currentLineHeight === value, typeof value === 'undefined')
+
+			if (removeLineHeight) {
+				removeLineHeightFromSelection(blocks, writer)
+			}
+			else {
+				setLineHeightOnSelection(blocks, writer, value)
+			}
+		})
+	}
+
+	_canSetLineHeight(block) {
+		return this.editor.model.schema.checkAttribute(block, LINE_HEIGHT)
+	}
+}
+
+class LineHeightUI extends Plugin {
+	init() {
+		const editor = this.editor
+		const t = editor.t
+
+		const options = this._getLocalizedOptions()
+
+		const command = editor.commands.get('lineHeight')
+
+		// Register UI component.
+		editor.ui.componentFactory.add('lineHeight', locale => {
+			const dropdownView = createDropdown(locale)
+			addListToDropdown(dropdownView, _prepareListOptions(options, command))
+
+			// Create dropdown model.
+			dropdownView.buttonView.set({
+				// label: 'Zeilenhöhe',
+				label: t('Line Height'),
+				icon: editor.config.get('lineHeight.icon') || '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"  width="24" height="24" viewBox="0 0 24 24"><path fill="#000000" d="M10,13H22V11H10M10,19H22V17H10M10,7H22V5H10M6,7H8.5L5,3.5L1.5,7H4V17H1.5L5,20.5L8.5,17H6V7Z" /></svg>',
+				tooltip: true
+			})
+
+			dropdownView.extendTemplate({
+				attributes: {
+					class: [
+						'p0thi-ckeditor5-lineHeight-dropdown'
+					]
+				}
+			})
+
+			dropdownView.bind('isEnabled').to(command)
+
+			// Execute command when an item from the dropdown is selected.
+			this.listenTo(dropdownView, 'execute', evt => {
+				editor.execute(evt.source.commandName, { value: evt.source.commandParam })
+				editor.editing.view.focus()
+			})
+
+			return dropdownView
+		})
+	}
+
+	_getLocalizedOptions() {
+		const editor = this.editor
+		const t = editor.t
+
+		const localizedTitles = {
+			// Default: 'Standard'
+			Default: t('Default')
+		}
+
+		const options = normalizeOptions(editor.config.get('lineHeight.options').filter(option => isSupported(option)))
+
+		return options.map(option => {
+			const title = localizedTitles[option.title]
+
+			if (title && title != option.title) {
+				// Clone the option to avoid altering the original `namedPresets` from `./utils.js`.
+				option = Object.assign({}, option, { title })
+			}
+
+			return option
+		})
+	}
+}
+
+class LineHeightEditing extends Plugin {
+	constructor(editor) {
+		super(editor)
+
+		editor.config.define('lineHeight', {
+			options: [0, 0.5, 1, 1.5, 2]
+		})
+	}
+
+	init() {
+		const editor = this.editor
+		const schema = editor.model.schema
+
+		// Filter out unsupported options.
+		const enabledOptions = editor.config.get('lineHeight.options').map(option => String(option)).filter(isSupported) // filter
+
+		// Allow alignment attribute on all blocks.
+		schema.extend('$block', { allowAttributes: 'lineHeight' })
+		editor.model.schema.setAttributeProperties('lineHeight', { isFormatting: true })
+
+		const definition = buildDefinition(enabledOptions/* .filter( option => !isDefault( option ) ) */)
+
+		editor.conversion.attributeToAttribute(definition)
+
+		editor.commands.add('lineHeight', new LineHeightCommand(editor))
+	}
+}
+
+
+function isSupported(option) {
+	// return supportedOptions.includes( option );
+	return /^\d(.\d+)?$/mg.test(String(option))
+}
+
+function normalizeOptions(configuredOptions) {
+	return configuredOptions.map(optionDefinition).filter(option => !!option);
+}
+
+function buildDefinition(options) {
+	const definition = {
+		model: {
+			key: 'lineHeight',
+			values: options.slice()
+		},
+		view: {}
+	};
+
+	for (const option of options) {
+		definition.view[option] = {
+			key: 'style',
+			value: {
+				'line-height': option
+			}
+		};
+	}
+
+	return definition;
+}
+
+function optionDefinition(option) {
+	if (typeof option === 'object') {
+		return option
+	}
+
+	if (option === 'default') {
+		return {
+			model: undefined,
+			title: 'Default'
+		};
+	}
+
+	const sizePreset = parseFloat(option)
+
+	if (isNaN(sizePreset)) {
+		return
+	}
+
+	return generatePixelPreset(sizePreset)
+}
+
+function generatePixelPreset(size) {
+	const sizeName = String(size)
+
+	return {
+		title: sizeName,
+		model: size,
+		view: {
+			name: 'span',
+			styles: {
+				'line-height': sizeName
+			},
+			priority: 5
+		}
+	}
+}
+
+function _prepareListOptions(options, command) {
+	const itemDefinitions = new Collection()
+
+	for (const option of options) {
+		const def = {
+			type: 'button',
+			model: new Model({
+				commandName: 'lineHeight',
+				commandParam: option.model,
+				label: option.title,
+				class: 'p0thi-ckeditor5-lineHeight-dropdown',
+				withText: true
+			})
+		}
+
+		if (option.view && option.view.classes) {
+			def.model.set('class', `${def.model.class} ${option.view.classes}`)
+		}
+
+		def.model.bind('isOn').to(command, 'value', value => {
+			const newValue = value ? parseFloat(value) : value
+			return newValue === option.model
+		})
+
+		// Add the option to the collection.
+		itemDefinitions.add(def)
+	}
+
+	return itemDefinitions
+}
+
+function removeLineHeightFromSelection(blocks, writer) {
+	for (const block of blocks) {
+		// console.log('removing')
+		writer.removeAttribute(LINE_HEIGHT, block)
+	}
+}
+
+function setLineHeightOnSelection(blocks, writer, lineHeight) {
+	for (const block of blocks) {
+		// console.log('setting', block, lineHeight)
+		writer.setAttribute(LINE_HEIGHT, lineHeight, block)
 	}
 }
 
@@ -983,7 +1338,8 @@ ClassicEditor.builtinPlugins = [
 	PageBreak,
 	ConvertDivAttributes,
 	CustomFontFamilyUI,
-	CustomFontSizeUI
+	CustomFontSizeUI,
+	LineHeight,
 	// InputContractEditing,
 	// ConvertPAttributes,
 	// ConvertSpanAttributes,
@@ -1009,6 +1365,8 @@ ClassicEditor.defaultConfig = {
 			'|',
 			'alignment',
 			'|',
+			'lineHeight',
+			'|',
 			'numberedList',
 			'bulletedList',
 			'|',
@@ -1028,7 +1386,13 @@ ClassicEditor.defaultConfig = {
 		],
 	},
 	htmlSupport: {
-		allow: [{ name: /.*/, attributes: !0, styles: !0, classes: !0 }],
+		allow: [{ name: /.*/, attributes: !0, styles: !0 },
+		{
+			name: 'span',
+			classes: !0,
+			attributes: !0,
+			styles: !0
+		}],
 		// allow: [
 		// 	{
 		// 		name: /^(span|section|article|table|td|figure)$/,
@@ -1112,17 +1476,15 @@ ClassicEditor.defaultConfig = {
 	},
 	fontSize: {
 		options: [
-			'8',
-			'10',
-			'12',
-			'13',
-			'14',
-			'16',
-			'18',
-			'24',
-			'36',
-			'48'
-		]
+			9, 10, 11, 12, 13, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72
+		],
+		supportAllValues: true,
+	},
+	fontFamily: {
+		supportAllValues: true,
+	},
+	lineHeight: { // specify your otions in the lineHeight config object. Default values are [ 0, 0.5, 1, 1.5, 2 ]
+		options: [0.5, 1, 1.5, 2, 2.5]
 	},
 	// This value must be kept in sync with the language defined in webpack.config.js.
 	language: 'vi',
